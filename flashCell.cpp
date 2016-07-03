@@ -14,6 +14,13 @@ ACCESS_VALUES debugInterface::getAccessValues(unsigned int planeAddress, unsigne
 			bytes[wordAddress].access;
 }
 
+unsigned int debugInterface::getRadiationDose(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
+	return cell->planes[planeAddress].
+			blocks[blockAddress].
+			pages[pageAddress].
+			bytes[wordAddress].radiation_dose;
+}
+
 FAILPOINT debugInterface::getFailpoint(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
 	return cell->planes[planeAddress].
 				blocks[blockAddress].
