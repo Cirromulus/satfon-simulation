@@ -4,96 +4,13 @@
 #include <stdio.h>
 #include <random>
 #include <chrono>
-#include <functional>
 #include <mutex>
 #include <iostream>
 #include <vector>
 
-#define DATA_TYPE unsigned char
-#define PAGE_DATA 512
-#define PAGE_AUX (PAGE_DATA / 32)
-#define PAGE_SIZE (PAGE_DATA + PAGE_AUX)
-#define BLOCK_SIZE 64	//128
-#define PLANE_SIZE 4	//8
-#define CELL_SIZE 4		//4
+#include "types.hpp"
+#include "debugInterface.hpp"
 
-#define TID_FLIP_START_PERCENT 0.85
-
-#define BLOCKING_ERROR true
-
-class flashCell;
-
-struct ACCESS_VALUES{
-	unsigned int times_read;
-	unsigned int times_written;
-	unsigned int times_reset;
-};
-
-struct FAILPOINT{
-	unsigned int erases;
-	unsigned int rad;
-};
-
-struct FAILPARAM{
-	unsigned int mean_erases;
-	unsigned int erase_deviation;
-	unsigned int mean_idose;
-	unsigned int idose_deviation;
-};
-
-struct NANDADRESS{
-	unsigned int plane;
-	unsigned int block;
-	unsigned int page;
-};
-
-class debugInterface{
-	flashCell* cell;
-	std::function<void()> notifyTarget;
-	bool targetSet = false;
-public:
-	debugInterface(flashCell *cell) : debugInterface(){
-		this->cell = cell;
-	}
-	debugInterface(){};
-
-
-	DATA_TYPE getValue(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress);
-
-	ACCESS_VALUES getAccessValues(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress);
-
-	unsigned int getRadiationDose(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress);
-
-	FAILPOINT getFailpoint(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress);
-
-	bool wasBitFlipped(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress);
-
-	DATA_TYPE getLatchMask(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress);
-
-	void setLatchMask(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress, DATA_TYPE latch_mask);
-
-	void setFailureValues(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress, FAILPOINT failure);
-
-	void flipBit(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress);
-	
-	void flipBitWithRad(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress, unsigned int rad);
-
-	void increaseTID(unsigned int rad);
-
-	void setBadBlock(unsigned int planeAddress, unsigned int blockAddress);
-
-	flashCell* getCell();
-
-	int getCellSize();
-	int getPlaneSize();
-	int getBlockSize();
-	int getPageSize();
-	int getPageDataSize();
-
-	void registerOnChangeFunction(std::function<void()> f);
-
-	void notifyChange();
-};
 
 class f_byte{
 	friend class debugInterface;
@@ -227,7 +144,6 @@ public:
 	page *getPage(unsigned int address){
 		if (address > BLOCK_SIZE){
 			fprintf(stderr, "ACCESS (READ/WRITE) from non-existent Block-address (<%d, was: %d)\n", BLOCK_SIZE, address);
-			while(!BLOCKING_ERROR){};
 			return NULL;
 		}
 		return &pages[address];
@@ -264,7 +180,6 @@ public:
 	block *getBlock(unsigned int address){
 		if (address > PLANE_SIZE){
 			fprintf(stderr, "ACCESS (READ/WRITE) to non-existent Plane-address (<%d, was: %d)\n", PLANE_SIZE, address);
-			while(!BLOCKING_ERROR){};
 			return NULL;
 		}
 		return &blocks[address];
