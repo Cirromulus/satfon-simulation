@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <thread>
 
 
 DATA_TYPE debugInterface::getValue(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
@@ -77,7 +78,7 @@ void debugInterface::flipBit(unsigned int planeAddress, unsigned int blockAddres
 	pages[pageAddress].
 	bytes[wordAddress].flipBit();
 }
-#include <thread>
+
 void debugInterface::flipBitWithRad(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress, unsigned int rad){
 	cell->planes[planeAddress].
 		blocks[blockAddress].
@@ -147,9 +148,9 @@ bool debugInterface::createServer(){
 		addr.sin_port = htons(START_PORT+i);
 
 		if (bind(serverSock, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-			printf("Bind failed with Port %d\n", START_PORT+i);
+			fprintf(stderr, "Bind failed with Port %d\n", START_PORT+i);
 		}else{
-			printf("Bind succeeded with Port %d\n", START_PORT+i);
+			//printf("Bind succeeded with Port %d\n", START_PORT+i);
 			break;
 		}
 	}

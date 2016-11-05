@@ -59,8 +59,9 @@ public:
 
 	~debugInterface(){
 		stop = true;
-		if(serverListenerThread.joinable())
-			serverListenerThread.join();
+		//while(!serverListenerThread.joinable()){}
+
+		serverListenerThread.join();
 	}
 
 
