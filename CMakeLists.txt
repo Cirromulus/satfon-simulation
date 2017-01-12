@@ -17,3 +17,6 @@ set(CMAKE_CXX_FLAGS_DEBUG
 
 add_library(simu ${SOURCES})
 target_link_libraries (simu ${CMAKE_THREAD_LIBS_INIT})
+
+add_executable(simu_example tests/example.cpp)
+target_link_libraries(simu_example simu)

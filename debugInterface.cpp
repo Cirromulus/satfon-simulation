@@ -181,7 +181,8 @@ void debugInterface::serverListener(){
 				fprintf(stderr, "Failed to send data.\n");
 
 		}else{
-			fprintf(stderr, "Debuginterface %s: Misaligned read from socket.\n(Was %d, should %d)\n",  typeid(this).name(), recvlen, bufsize);
+			if(recvlen > 0)
+				fprintf(stderr, "Debuginterface %s: Misaligned read from socket.\n(Was %d, should %d)\n",  typeid(this).name(), recvlen, bufsize);
 		}
 	}
 	close(serverSock);
