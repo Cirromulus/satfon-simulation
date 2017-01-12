@@ -11,7 +11,7 @@
 #include <atomic>
 #include <thread>
 #include "types.hpp"
-
+#include <sys/socket.h>
 #define START_PORT 2084
 #define MAX_INSTANCES_LISTENING 4
 
@@ -59,6 +59,7 @@ public:
 
 	~debugInterface(){
 		stop = true;
+		shutdown(serverSock, SHUT_RDWR);
 		//while(!serverListenerThread.joinable()){}
 
 		serverListenerThread.join();
