@@ -6,7 +6,6 @@
  */
 
 #include "debugInterface.hpp"
-#include "flashCell.h"
 #include <stdio.h>
 #include <string.h>
 #include <netinet/in.h>
@@ -14,6 +13,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <thread>
+
+#include "flashCell.h"
 
 
 DATA_TYPE debugInterface::getValue(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
@@ -101,7 +102,7 @@ void debugInterface::setBadBlock(unsigned int planeAddress, unsigned int blockAd
 					bytes[PAGE_DATA + 5].word = 0x00;		//Siehe Dokumentation von Badblockmarkern
 }
 
-flashCell* debugInterface::getCell(){
+FlashCell* debugInterface::getCell(){
 	return cell;
 }
 

@@ -26,10 +26,10 @@ enum functionRequest{
 };
 
 
-class flashCell;
+class FlashCell;
 
 class debugInterface{
-	flashCell* cell;
+	FlashCell* cell;
 	std::function<void()> notifyTarget;
 	bool targetSet = false;
 	int serverSock = 0;
@@ -47,7 +47,7 @@ class debugInterface{
 	int handleRequest(char* answerBuf, functionRequest function, unsigned int plane, unsigned int block, unsigned int page);
 
 public:
-	debugInterface(flashCell *cell) : debugInterface(){
+	debugInterface(FlashCell *cell) : debugInterface(){
 		this->cell = cell;
 		stop = {false};
 		if(!createServer()){
@@ -90,7 +90,7 @@ public:
 
 	void setBadBlock(unsigned int planeAddress, unsigned int blockAddress);
 
-	flashCell* getCell();
+	FlashCell* getCell();
 
 	int getCellSize();
 	int getPlaneSize();

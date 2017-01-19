@@ -1,7 +1,7 @@
 #include "flashCell.h"
 
 
-int flashCell::readPage(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, DATA_TYPE *buf){
+int FlashCell::readPage(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, DATA_TYPE *buf){
 	if (planeAddress >= CELL_SIZE){
 		fprintf(stderr, "READ to non-existent Plane-address (<%d, was: %d)\n", CELL_SIZE, planeAddress);
 		return -1;
@@ -17,7 +17,7 @@ int flashCell::readPage(unsigned int planeAddress, unsigned int blockAddress, un
 	return planes[planeAddress].getBlock(blockAddress)->getPage(pageAddress)->readPage(buf);
 }
 
-int flashCell::writePage(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, DATA_TYPE data[PAGE_SIZE]){
+int FlashCell::writePage(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, DATA_TYPE data[PAGE_SIZE]){
 	//mutex.lock();
 	if (planeAddress >= CELL_SIZE){
 		fprintf(stderr, "WRITE to non-existent Plane-address (<%d, was: %d)\n", CELL_SIZE, planeAddress);
@@ -37,7 +37,7 @@ int flashCell::writePage(unsigned int planeAddress, unsigned int blockAddress, u
 	return ret;
 }
 
-int flashCell::eraseBlock(unsigned int planeAddress, unsigned int blockAddress){
+int FlashCell::eraseBlock(unsigned int planeAddress, unsigned int blockAddress){
 	//mutex.lock();
 	if (planeAddress >= CELL_SIZE){
 		fprintf(stderr, "ERASE in non-existent Cell-address (<%d, was: %d)\n", CELL_SIZE, planeAddress);
@@ -53,6 +53,6 @@ int flashCell::eraseBlock(unsigned int planeAddress, unsigned int blockAddress){
 	return ret;
 }
 
-debugInterface* flashCell::getDebugInterface(){
+debugInterface* FlashCell::getDebugInterface(){
 	return dbgIf;
 }

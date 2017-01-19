@@ -7,11 +7,12 @@
 #include <stdio.h>
 #include <stdlib.h>	//Random
 #include <time.h>   //time
+
 #include "../flashCell.h"
 
 int main(int argc, char *argv[]){
 	FAILPARAM fp = {100, 20, 0, 0};
-	flashCell flash = flashCell(fp);
+	FlashCell flash = FlashCell(fp);
 	bool ok = true;
 	srand (time(NULL));
 	unsigned char buf[flash.pageSize];

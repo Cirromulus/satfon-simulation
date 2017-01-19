@@ -14,7 +14,7 @@
 
 class f_byte{
 	friend class debugInterface;
-	friend class flashCell;
+	friend class FlashCell;
 	DATA_TYPE word = 0xFF, latch_mask = 0x00;
 	ACCESS_VALUES access = {};
 	FAILPOINT failpoint = {};
@@ -70,7 +70,7 @@ public:
 
 class page{
 	friend class debugInterface;
-	friend class flashCell;
+	friend class FlashCell;
 	std::vector<f_byte> bytes;
 	FAILPARAM fpa;
 public:
@@ -128,7 +128,7 @@ public:
 
 class block{
 	friend class debugInterface;
-	friend class flashCell;
+	friend class FlashCell;
 	std::vector<page> pages;
 	//FAILPARAM fpa;
 public:
@@ -166,7 +166,7 @@ public:
 
 class plane{
 	friend class debugInterface;
-	friend class flashCell;
+	friend class FlashCell;
 	std::vector<block> blocks;
 public:
 	plane(FAILPARAM f){
@@ -192,13 +192,13 @@ public:
 	}
 };
 
-class flashCell{
+class FlashCell{
 	friend class debugInterface;
 	std::vector<plane> planes;
 	debugInterface* dbgIf;
 	//std::mutex write_mutex;
 public:
-	flashCell(FAILPARAM f = {100000, 0, 0, 0}){
+	FlashCell(FAILPARAM f = {100000, 0, 0, 0}){
 		srand(time(0)+rand());
 		planes.reserve(CELL_SIZE);
 		for(int i = 0; i < CELL_SIZE; i++){
@@ -207,7 +207,7 @@ public:
 		dbgIf = new debugInterface(this);
 	}
 
-	~flashCell(){
+	~FlashCell(){
 		delete dbgIf;
 	}
 
