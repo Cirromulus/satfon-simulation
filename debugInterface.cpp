@@ -186,6 +186,7 @@ void debugInterface::serverListener(){
 				fprintf(stderr, "Debuginterface %s: Misaligned read from socket.\n(Was %d, should %d)\n",  typeid(this).name(), recvlen, bufsize);
 		}
 	}
+	free(buf);
 	free(answerBuf);
 	close(serverSock);
 }
