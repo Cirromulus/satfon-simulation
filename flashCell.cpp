@@ -53,6 +53,6 @@ int FlashCell::eraseBlock(unsigned int planeAddress, unsigned int blockAddress){
 	return ret;
 }
 
-debugInterface* FlashCell::getDebugInterface(){
+DebugInterface* FlashCell::getDebugInterface(){
 	return dbgIf;
 }

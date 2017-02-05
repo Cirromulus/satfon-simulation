@@ -8,12 +8,12 @@
 #include <iostream>
 #include <vector>
 
-#include "types.hpp"
 #include "debugInterface.hpp"
+#include "types.hpp"
 
 
 class f_byte{
-	friend class debugInterface;
+	friend class DebugInterface;
 	friend class FlashCell;
 	DATA_TYPE word = 0xFF, latch_mask = 0x00;
 	ACCESS_VALUES access = {};
@@ -69,7 +69,7 @@ public:
 };
 
 class page{
-	friend class debugInterface;
+	friend class DebugInterface;
 	friend class FlashCell;
 	std::vector<f_byte> bytes;
 	FAILPARAM fpa;
@@ -127,7 +127,7 @@ public:
 };
 
 class block{
-	friend class debugInterface;
+	friend class DebugInterface;
 	friend class FlashCell;
 	std::vector<page> pages;
 	//FAILPARAM fpa;
@@ -165,7 +165,7 @@ public:
 };
 
 class plane{
-	friend class debugInterface;
+	friend class DebugInterface;
 	friend class FlashCell;
 	std::vector<block> blocks;
 public:
@@ -193,9 +193,9 @@ public:
 };
 
 class FlashCell{
-	friend class debugInterface;
+	friend class DebugInterface;
 	std::vector<plane> planes;
-	debugInterface* dbgIf;
+	DebugInterface* dbgIf;
 	//std::mutex write_mutex;
 public:
 	FlashCell(FAILPARAM f = {100000, 0, 0, 0}){
@@ -204,7 +204,7 @@ public:
 		for(int i = 0; i < CELL_SIZE; i++){
 			planes.push_back(plane(f));
 		}
-		dbgIf = new debugInterface(this);
+		dbgIf = new DebugInterface(this);
 	}
 
 	~FlashCell(){
@@ -229,6 +229,6 @@ public:
 
 	int eraseBlock(unsigned int planeAddress, unsigned int blockAddress);
 
-	debugInterface* getDebugInterface();
+	DebugInterface* getDebugInterface();
 };
 #endif

@@ -12,10 +12,11 @@
 #include <atomic>
 #include <thread>
 #include "types.hpp"
-#include "debugInterface.hpp"
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+
+#include "debugInterface.hpp"
 
 class debugInterfaceClient {
 	DATA_TYPE dataBuf[PAGE_SIZE];

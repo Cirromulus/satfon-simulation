@@ -6,6 +6,7 @@
  */
 
 #include "debugInterfaceClient.hpp"
+
 #include <arpa/inet.h>
 
 bool debugInterfaceClient::initClient(int port){

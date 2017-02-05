@@ -6,6 +6,7 @@
  */
 
 #include "debugInterface.hpp"
+
 #include <stdio.h>
 #include <string.h>
 #include <netinet/in.h>
@@ -17,70 +18,70 @@
 #include "flashCell.h"
 
 
-DATA_TYPE debugInterface::getValue(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
+DATA_TYPE DebugInterface::getValue(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
 	return cell->planes[planeAddress].
 			blocks[blockAddress].
 			pages[pageAddress].
 			bytes[wordAddress].word;
 }
 
-ACCESS_VALUES debugInterface::getAccessValues(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
+ACCESS_VALUES DebugInterface::getAccessValues(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
 	return cell->planes[planeAddress].
 			blocks[blockAddress].
 			pages[pageAddress].
 			bytes[wordAddress].access;
 }
 
-unsigned int debugInterface::getRadiationDose(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
+unsigned int DebugInterface::getRadiationDose(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
 	return cell->planes[planeAddress].
 			blocks[blockAddress].
 			pages[pageAddress].
 			bytes[wordAddress].radiation_dose;
 }
 
-FAILPOINT debugInterface::getFailpoint(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
+FAILPOINT DebugInterface::getFailpoint(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
 	return cell->planes[planeAddress].
 				blocks[blockAddress].
 				pages[pageAddress].
 				bytes[wordAddress].failpoint;
 }
 
-bool debugInterface::wasBitFlipped(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
+bool DebugInterface::wasBitFlipped(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
 	return cell->planes[planeAddress].
 				blocks[blockAddress].
 				pages[pageAddress].
 				bytes[wordAddress].wasFlipped;
 }
 
-DATA_TYPE debugInterface::getLatchMask(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
+DATA_TYPE DebugInterface::getLatchMask(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
 	return cell->planes[planeAddress].
 			blocks[blockAddress].
 			pages[pageAddress].
 			bytes[wordAddress].latch_mask;
 }
 
-void debugInterface::setLatchMask(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress, DATA_TYPE latch_mask){
+void DebugInterface::setLatchMask(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress, DATA_TYPE latch_mask){
 	cell->planes[planeAddress].
 	blocks[blockAddress].
 	pages[pageAddress].
 	bytes[wordAddress].latch_mask |= latch_mask;
 }
 
-void debugInterface::setFailureValues(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress, FAILPOINT failure){
+void DebugInterface::setFailureValues(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress, FAILPOINT failure){
 	cell->planes[planeAddress].
 	blocks[blockAddress].
 	pages[pageAddress].
 	bytes[wordAddress].failpoint = failure;
 }
 
-void debugInterface::flipBit(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
+void DebugInterface::flipBit(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
 	cell->planes[planeAddress].
 	blocks[blockAddress].
 	pages[pageAddress].
 	bytes[wordAddress].flipBit();
 }
 
-void debugInterface::flipBitWithRad(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress, unsigned int rad){
+void DebugInterface::flipBitWithRad(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress, unsigned int rad){
 	cell->planes[planeAddress].
 		blocks[blockAddress].
 		pages[pageAddress].
@@ -91,49 +92,49 @@ void debugInterface::flipBitWithRad(unsigned int planeAddress, unsigned int bloc
 		bytes[wordAddress].increaseTID(rad);
 }
 
-void debugInterface::increaseTID(unsigned int rad){
+void DebugInterface::increaseTID(unsigned int rad){
 	cell->increaseTID(rad);
 }
 
-void debugInterface::setBadBlock(unsigned int planeAddress, unsigned int blockAddress){
+void DebugInterface::setBadBlock(unsigned int planeAddress, unsigned int blockAddress){
 	cell->planes[planeAddress].
 					blocks[blockAddress].
 					pages[0].
 					bytes[PAGE_DATA + 5].word = 0x00;		//Siehe Dokumentation von Badblockmarkern
 }
 
-FlashCell* debugInterface::getCell(){
+FlashCell* DebugInterface::getCell(){
 	return cell;
 }
 
-int debugInterface::getCellSize(){
+int DebugInterface::getCellSize(){
 	return cell->cellSize;
 }
-int debugInterface::getPlaneSize(){
+int DebugInterface::getPlaneSize(){
 	return cell->planeSize;
 }
-int debugInterface::getBlockSize(){
+int DebugInterface::getBlockSize(){
 	return cell->blockSize;
 }
-int debugInterface::getPageSize(){
+int DebugInterface::getPageSize(){
 	return cell->pageSize;
 }
-int debugInterface::getPageDataSize(){
+int DebugInterface::getPageDataSize(){
 	return cell->pageDataSize;
 }
 
-void debugInterface::registerOnChangeFunction(std::function<void()> f){
+void DebugInterface::registerOnChangeFunction(std::function<void()> f){
 	notifyTarget = f;
 	targetSet = true;
 }
 
-void debugInterface::notifyChange(){
+void DebugInterface::notifyChange(){
 	if (targetSet){
 		notifyTarget();
 	}
 }
 
-bool debugInterface::createServer(){
+bool DebugInterface::createServer(){
 
 	if ((serverSock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 		fprintf(stderr, "cannot create socket");
@@ -159,7 +160,7 @@ bool debugInterface::createServer(){
 	return true;
 }
 
-void debugInterface::serverListener(){
+void DebugInterface::serverListener(){
 	int bufsize = sizeof(enum functionRequest) + sizeof(unsigned int) * 3;
 	char* buf = (char*)malloc(bufsize);	//plane, block, page
 
@@ -191,7 +192,7 @@ void debugInterface::serverListener(){
 	close(serverSock);
 }
 
-int debugInterface::handleRequest(char* answerBuf, functionRequest function, unsigned int plane, unsigned int block, unsigned int page){
+int DebugInterface::handleRequest(char* answerBuf, functionRequest function, unsigned int plane, unsigned int block, unsigned int page){
 	switch(function){
 	case F_GETVALUE:
 		for(int i = 0; i < PAGE_SIZE; i++){

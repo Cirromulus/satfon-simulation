@@ -28,7 +28,7 @@ enum functionRequest{
 
 class FlashCell;
 
-class debugInterface{
+class DebugInterface{
 	FlashCell* cell;
 	std::function<void()> notifyTarget;
 	bool targetSet = false;
@@ -36,7 +36,7 @@ class debugInterface{
 	std::atomic<bool> stop;
 	std::thread serverListenerThread;
 
-	debugInterface(){
+	DebugInterface(){
 		cell = NULL;
 	};
 
@@ -47,17 +47,17 @@ class debugInterface{
 	int handleRequest(char* answerBuf, functionRequest function, unsigned int plane, unsigned int block, unsigned int page);
 
 public:
-	debugInterface(FlashCell *cell) : debugInterface(){
+	DebugInterface(FlashCell *cell) : DebugInterface(){
 		this->cell = cell;
 		stop = {false};
 		if(!createServer()){
 			fprintf(stderr, "Debuginterface %s: Could not create Server!", typeid(this).name());
 		}else{
-			serverListenerThread = std::thread(&debugInterface::serverListener, this);
+			serverListenerThread = std::thread(&DebugInterface::serverListener, this);
 		}
 	}
 
-	~debugInterface(){
+	~DebugInterface(){
 		stop = true;
 		shutdown(serverSock, SHUT_RDWR);
 		//while(!serverListenerThread.joinable()){}
