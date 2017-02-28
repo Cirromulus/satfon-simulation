@@ -50,7 +50,6 @@ public:
 	}
 
 	unsigned int getPageSize(){
-		//should be non-static
 		return PAGE_SIZE;
 	}
 
