@@ -1,12 +1,16 @@
 #ifndef __FLASHCELL__
 #define __FLASHCELL__
 
+#include "debugInterface.hpp"
+#include "types.hpp"
+
 #include <stdio.h>
 #include <random>
 #include <chrono>
 #include <mutex>
 #include <iostream>
 #include <vector>
+#include <signal.h> //just for debug
 
 #include "debugInterface.hpp"
 #include "types.hpp"
@@ -72,9 +76,9 @@ class page{
 	friend class DebugInterface;
 	friend class FlashCell;
 	std::vector<f_byte> bytes;
-	FAILPARAM fpa;
+	Failparam fpa;
 public:
-	page(FAILPARAM fpa){
+	Page(Failparam fpa){
 		this->fpa = fpa;
 		bytes.reserve(PAGE_SIZE);
 		
@@ -132,16 +136,16 @@ class block{
 	std::vector<page> pages;
 	//FAILPARAM fpa;
 public:
-	block(FAILPARAM f){
+	Block(Failparam f){
 		pages.reserve(BLOCK_SIZE);
 		for(int i = 0; i < BLOCK_SIZE; i++){
-			pages.push_back(page(f));
+			pages.push_back(Page(f));
 		}
 		//fpa = f;
 	}
 	//~block(){} //Notwendig?
 
-	page *getPage(unsigned int address){
+	Page *getPage(unsigned int address){
 		if (address > BLOCK_SIZE){
 			fprintf(stderr, "ACCESS (READ/WRITE) from non-existent Block-address (<%d, was: %d)\n", BLOCK_SIZE, address);
 			return NULL;
@@ -169,15 +173,15 @@ class plane{
 	friend class FlashCell;
 	std::vector<block> blocks;
 public:
-	plane(FAILPARAM f){
+	Plane(Failparam f){
 		blocks.reserve(PLANE_SIZE);
 		for(int i = 0; i < PLANE_SIZE; i++){
-			blocks.push_back(block(f));
+			blocks.push_back(Block(f));
 		}
 	}
 	//~plane(){} //Notwendig?
 
-	block *getBlock(unsigned int address){
+	Block *getBlock(unsigned int address){
 		if (address > PLANE_SIZE){
 			fprintf(stderr, "ACCESS (READ/WRITE) to non-existent Plane-address (<%d, was: %d)\n", PLANE_SIZE, address);
 			return NULL;
@@ -202,7 +206,7 @@ public:
 		srand(time(0)+rand());
 		planes.reserve(CELL_SIZE);
 		for(int i = 0; i < CELL_SIZE; i++){
-			planes.push_back(plane(f));
+			planes.push_back(Plane(f));
 		}
 		dbgIf = new DebugInterface(this);
 	}
