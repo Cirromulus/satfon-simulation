@@ -5,9 +5,9 @@
  *      Author: urinator
  */
 
+#include "debugInterfaceClient.hpp"
 
 #include <arpa/inet.h>
-#include <debugInterfaceClient.hpp>
 
 bool debugInterfaceClient::initClient(int port){
 	if((clientSock = socket(AF_INET, SOCK_DGRAM, 0)) < 0){

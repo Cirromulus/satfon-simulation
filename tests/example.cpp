@@ -4,7 +4,6 @@
  *  Created on: 12.01.2017
  *      Author: urinator
  */
-#include "flashCell.h"
 #include <stdio.h>
 #include <stdlib.h>	//Random
 #include <time.h>   //time

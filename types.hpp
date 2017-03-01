@@ -30,7 +30,7 @@ struct FAILPOINT{
 	unsigned int rad;
 };
 
-struct Failparam{
+struct FAILPARAM{
 	unsigned int mean_erases;
 	unsigned int erase_deviation;
 	unsigned int mean_idose;

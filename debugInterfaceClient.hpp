@@ -8,14 +8,10 @@
 #ifndef SIMU_DEBUGINTERFACECLIENT_HPP_
 #define SIMU_DEBUGINTERFACECLIENT_HPP_
 
-#include "debugInterface.hpp"
-#include "types.hpp"
-
 #include <functional>
 #include <atomic>
 #include <thread>
 #include "types.hpp"
-#include <netinet/in.h>
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/socket.h>
