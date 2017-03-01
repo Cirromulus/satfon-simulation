@@ -72,7 +72,7 @@ public:
 	}
 };
 
-class page{
+class Page{
 	friend class DebugInterface;
 	friend class FlashCell;
 	std::vector<f_byte> bytes;
@@ -130,11 +130,11 @@ public:
 	}
 };
 
-class block{
+class Block{
 	friend class DebugInterface;
 	friend class FlashCell;
-	std::vector<page> pages;
-	//FAILPARAM fpa;
+	std::vector<Page> pages;
+	//Failparam fpa;
 public:
 	Block(Failparam f){
 		pages.reserve(BLOCK_SIZE);
@@ -168,10 +168,10 @@ public:
 	}
 };
 
-class plane{
+class Plane{
 	friend class DebugInterface;
 	friend class FlashCell;
-	std::vector<block> blocks;
+	std::vector<Block> blocks;
 public:
 	Plane(Failparam f){
 		blocks.reserve(PLANE_SIZE);
@@ -198,11 +198,11 @@ public:
 
 class FlashCell{
 	friend class DebugInterface;
-	std::vector<plane> planes;
+	std::vector<Plane> planes;
 	DebugInterface* dbgIf;
 	//std::mutex write_mutex;
 public:
-	FlashCell(FAILPARAM f = {100000, 0, 0, 0}){
+	FlashCell(Failparam f = {100000, 0, 0, 0}){
 		srand(time(0)+rand());
 		planes.reserve(CELL_SIZE);
 		for(int i = 0; i < CELL_SIZE; i++){

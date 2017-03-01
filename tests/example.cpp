@@ -12,7 +12,7 @@
 #include "../flashCell.h"
 
 int main(int argc, char *argv[]){
-	FAILPARAM fp = {100, 20, 0, 0};
+	Failparam fp = {100, 20, 0, 0};
 	FlashCell flash = FlashCell(fp);
 	bool ok = true;
 	srand (time(NULL));
