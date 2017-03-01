@@ -20,8 +20,8 @@ class f_byte{
 	friend class DebugInterface;
 	friend class FlashCell;
 	DATA_TYPE word = 0xFF, latch_mask = 0x00;
-	ACCESS_VALUES access = {};
-	FAILPOINT failpoint = {};
+	AccessValues access = {};
+	Failpoint failpoint = {};
 	unsigned int radiation_dose = 0;
 	bool wasFlipped = false;
 
@@ -33,8 +33,7 @@ class f_byte{
 		latch_mask = 1 << (rand() % (sizeof(DATA_TYPE) * 8));
 	}
 public:
-	f_byte(FAILPOINT f){
-		failpoint = f;
+	f_byte(Failpoint f) : failpoint(f){
 	}
 	int getWord(DATA_TYPE *wrd){
 		access.times_read++;
@@ -78,8 +77,7 @@ class Page{
 	std::vector<f_byte> bytes;
 	Failparam fpa;
 public:
-	Page(Failparam fpa){
-		this->fpa = fpa;
+	Page(Failparam mfpa) : fpa(mfpa){
 		bytes.reserve(PAGE_SIZE);
 		
 		auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -90,7 +88,7 @@ public:
 
 
 		for(int i = 0; i < PAGE_SIZE; i++){
-			FAILPOINT fpo = {fpa.mean_erases, fpa.mean_idose};
+			Failpoint fpo = {fpa.mean_erases, fpa.mean_idose};
 			if(fpa.erase_deviation != 0){
 				fpo.erases = std::round(erase_distribution(generator));
 			}

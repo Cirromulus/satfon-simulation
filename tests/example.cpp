@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
 	}
 	i = 1;
 	while(ok && i++){
-		NANDADRESS pos = {0};
+		Nandaddress pos = {0};
 		pos.plane = rand() % flash.cellSize;	//A bit confusing names...
 		pos.block = rand() % flash.planeSize;
 		pos.page  = rand() % flash.blockSize;

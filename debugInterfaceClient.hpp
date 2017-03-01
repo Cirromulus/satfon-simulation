@@ -24,9 +24,9 @@
 
 class debugInterfaceClient {
 	DATA_TYPE dataBuf[PAGE_SIZE];
-	ACCESS_VALUES avBuf[PAGE_SIZE];
+	AccessValues avBuf[PAGE_SIZE];
 	unsigned int radiationBuf[PAGE_SIZE];
-	FAILPOINT fpBuf[PAGE_SIZE];
+	Failpoint fpBuf[PAGE_SIZE];
 	bool bitFlippedBuf[PAGE_SIZE];
 	DATA_TYPE latchBuf[PAGE_SIZE];
 
@@ -74,13 +74,13 @@ public:
 	DATA_TYPE* getValue(unsigned int planeAddress, unsigned int blockAddress,
 			unsigned int pageAddress);
 
-	ACCESS_VALUES* getAccessValues(unsigned int planeAddress,
+	AccessValues* getAccessValues(unsigned int planeAddress,
 			unsigned int blockAddress, unsigned int pageAddress);
 
 	unsigned int* getRadiationDose(unsigned int planeAddress,
 			unsigned int blockAddress, unsigned int pageAddress);
 
-	FAILPOINT* getFailpoint(unsigned int planeAddress,
+	Failpoint* getFailpoint(unsigned int planeAddress,
 			unsigned int blockAddress, unsigned int pageAddress);
 
 	bool* wasBitFlipped(unsigned int planeAddress, unsigned int blockAddress,

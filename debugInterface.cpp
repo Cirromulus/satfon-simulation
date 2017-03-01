@@ -25,7 +25,7 @@ DATA_TYPE DebugInterface::getValue(unsigned int planeAddress, unsigned int block
 			bytes[wordAddress].word;
 }
 
-ACCESS_VALUES DebugInterface::getAccessValues(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
+AccessValues DebugInterface::getAccessValues(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
 	return cell->planes[planeAddress].
 			blocks[blockAddress].
 			pages[pageAddress].
@@ -39,7 +39,7 @@ unsigned int DebugInterface::getRadiationDose(unsigned int planeAddress, unsigne
 			bytes[wordAddress].radiation_dose;
 }
 
-FAILPOINT DebugInterface::getFailpoint(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
+Failpoint DebugInterface::getFailpoint(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
 	return cell->planes[planeAddress].
 				blocks[blockAddress].
 				pages[pageAddress].
@@ -67,7 +67,7 @@ void DebugInterface::setLatchMask(unsigned int planeAddress, unsigned int blockA
 	bytes[wordAddress].latch_mask |= latch_mask;
 }
 
-void DebugInterface::setFailureValues(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress, FAILPOINT failure){
+void DebugInterface::setFailureValues(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress, Failpoint failure){
 	cell->planes[planeAddress].
 	blocks[blockAddress].
 	pages[pageAddress].
@@ -164,7 +164,7 @@ void DebugInterface::serverListener(){
 	int bufsize = sizeof(enum functionRequest) + sizeof(unsigned int) * 3;
 	char* buf = (char*)malloc(bufsize);	//plane, block, page
 
-	char* answerBuf = (char*)malloc(PAGE_SIZE * sizeof(ACCESS_VALUES));	//Has to fit the biggest type
+	char* answerBuf = (char*)malloc(PAGE_SIZE * sizeof(AccessValues));	//Has to fit the biggest type
 
 	sockaddr remAddr = {0};
 	unsigned int remAddrSize = sizeof(remAddr);
@@ -201,12 +201,12 @@ int DebugInterface::handleRequest(char* answerBuf, functionRequest function, uns
 		return PAGE_SIZE*sizeof(DATA_TYPE);
 	case F_GETACCESSVALUES:
 		for(int i = 0; i < PAGE_SIZE; i++){
-			ACCESS_VALUES av = getAccessValues(plane, block, page, i);
-			for(unsigned int j = 0; j < sizeof(ACCESS_VALUES); j++){
-				answerBuf[i*sizeof(ACCESS_VALUES) + j] = ((char*) &av)[j];
+			AccessValues av = getAccessValues(plane, block, page, i);
+			for(unsigned int j = 0; j < sizeof(AccessValues); j++){
+				answerBuf[i*sizeof(AccessValues) + j] = ((char*) &av)[j];
 			}
 		}
-		return PAGE_SIZE*sizeof(ACCESS_VALUES);
+		return PAGE_SIZE*sizeof(AccessValues);
 	case F_GETRADIATIONDOSE:
 		for(int i = 0; i < PAGE_SIZE; i++){
 			answerBuf[i*sizeof(unsigned int)] = getRadiationDose(plane, block, page, i);
@@ -214,12 +214,12 @@ int DebugInterface::handleRequest(char* answerBuf, functionRequest function, uns
 		return PAGE_SIZE*sizeof(unsigned int);
 	case F_GETFAILPOINT:
 		for(int i = 0; i < PAGE_SIZE; i++){
-			FAILPOINT fp = getFailpoint(plane, block, page, i);
-			for(unsigned int j = 0; j < sizeof(FAILPOINT); j++){
-				answerBuf[i*sizeof(FAILPOINT) + j] = ((char*) &fp)[j];
+			Failpoint fp = getFailpoint(plane, block, page, i);
+			for(unsigned int j = 0; j < sizeof(Failpoint); j++){
+				answerBuf[i*sizeof(Failpoint) + j] = ((char*) &fp)[j];
 			}
 		}
-		return PAGE_SIZE*sizeof(FAILPOINT);
+		return PAGE_SIZE*sizeof(Failpoint);
 	case F_WASBITFLIPPED:
 		for(int i = 0; i < PAGE_SIZE; i++){
 			answerBuf[i*sizeof(bool)] = wasBitFlipped(plane, block, page, i);

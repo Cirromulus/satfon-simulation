@@ -36,10 +36,6 @@ class DebugInterface{
 	std::atomic<bool> stop;
 	std::thread serverListenerThread;
 
-	DebugInterface(){
-		cell = NULL;
-	};
-
 	bool createServer();
 
 	void serverListener();
@@ -47,8 +43,7 @@ class DebugInterface{
 	int handleRequest(char* answerBuf, functionRequest function, unsigned int plane, unsigned int block, unsigned int page);
 
 public:
-	DebugInterface(FlashCell *cell) : DebugInterface(){
-		this->cell = cell;
+	DebugInterface(FlashCell *mcell) : cell(mcell){
 		stop = {false};
 		if(!createServer()){
 			fprintf(stderr, "Debuginterface %s: Could not create Server!", typeid(this).name());
@@ -68,11 +63,11 @@ public:
 
 	DATA_TYPE getValue(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress);
 
-	ACCESS_VALUES getAccessValues(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress);
+	AccessValues getAccessValues(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress);
 
 	unsigned int getRadiationDose(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress);
 
-	FAILPOINT getFailpoint(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress);
+	Failpoint getFailpoint(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress);
 
 	bool wasBitFlipped(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress);
 
@@ -80,7 +75,7 @@ public:
 
 	void setLatchMask(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress, DATA_TYPE latch_mask);
 
-	void setFailureValues(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress, FAILPOINT failure);
+	void setFailureValues(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress, Failpoint failure);
 
 	void flipBit(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress);
 

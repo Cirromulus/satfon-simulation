@@ -78,9 +78,9 @@ DATA_TYPE* debugInterfaceClient::getValue(unsigned int planeAddress, unsigned in
 	return NULL;
 }
 
-ACCESS_VALUES* debugInterfaceClient::getAccessValues(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress){
+AccessValues* debugInterfaceClient::getAccessValues(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress){
 	sendRequest(F_GETACCESSVALUES, planeAddress, blockAddress, pageAddress);
-	if(recEverything(avBuf, PAGE_SIZE* sizeof(ACCESS_VALUES)) > 0){
+	if(recEverything(avBuf, PAGE_SIZE* sizeof(AccessValues)) > 0){
 		return avBuf;
 	}
 	return NULL;
@@ -94,9 +94,9 @@ unsigned int* debugInterfaceClient::getRadiationDose(unsigned int planeAddress, 
 	return NULL;
 }
 
-FAILPOINT* debugInterfaceClient::getFailpoint(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress){
+Failpoint* debugInterfaceClient::getFailpoint(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress){
 	sendRequest(F_GETFAILPOINT, planeAddress, blockAddress, pageAddress);
-	if(recEverything(fpBuf, PAGE_SIZE* sizeof(FAILPOINT)) > 0){
+	if(recEverything(fpBuf, PAGE_SIZE* sizeof(Failpoint)) > 0){
 		return fpBuf;
 	}
 	return NULL;

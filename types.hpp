@@ -19,13 +19,13 @@
 
 #define TID_FLIP_START_PERCENT 0.85
 
-struct ACCESS_VALUES{
+struct AccessValues{
 	unsigned int times_read;
 	unsigned int times_written;
 	unsigned int times_reset;
 };
 
-struct FAILPOINT{
+struct Failpoint{
 	unsigned int erases;
 	unsigned int rad;
 };
@@ -37,7 +37,7 @@ struct Failparam{
 	unsigned int idose_deviation;
 };
 
-struct NANDADRESS{
+struct Nandaddress{
 	unsigned int plane;
 	unsigned int block;
 	unsigned int page;
