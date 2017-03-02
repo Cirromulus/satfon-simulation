@@ -1,6 +1,7 @@
-
+#Simu
 import os
 
+print("SIMU")
 Import('envGlobal')
 
 envGlobal.Append(CPPPATH=[os.path.abspath('.')])
