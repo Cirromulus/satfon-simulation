@@ -42,7 +42,7 @@ void debugInterfaceClient::sendRequest(functionRequest function, unsigned int pl
 	sendBuf[sizeof(functionRequest) + sizeof(unsigned int)] = block;
 	sendBuf[sizeof(functionRequest) + sizeof(unsigned int) * 2] = page;
 
-	if (sendto(clientSock, sendBuf, sendBufSize, 0 , (sockaddr*)&rcpt, rcptSize)<0){
+	if (sendto(clientSock, sendBuf, sendBufSize, 0 , reinterpret_cast<sockaddr*> (&rcpt), rcptSize)<0){
 		fprintf(stderr, "could not send request.\n");
 	}
 }
@@ -51,7 +51,7 @@ int debugInterfaceClient::recEverything(void* buf, unsigned int size){
 	unsigned int receivedBytes = 0;
 	while(receivedBytes < size){
 		int tmpReceivedBytes = 0;
-		if((tmpReceivedBytes = recvfrom(clientSock, buf, size, 0, (sockaddr*) &rcpt, &rcptSize)) < 0){
+		if((tmpReceivedBytes = recvfrom(clientSock, buf, size, 0, reinterpret_cast<sockaddr*> (&rcpt), &rcptSize)) < 0){
 			//fprintf(stderr, "Error while receiving\n");
 			return -1;
 		}

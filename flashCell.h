@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <random>
 #include <chrono>
-#include <mutex>
 #include <iostream>
 #include <vector>
 #include <signal.h> //just for debug
@@ -63,7 +62,7 @@ public:
 			latch();
 		}
 		if(radiation_dose > failpoint.rad * TID_FLIP_START_PERCENT){
-			if(rand() % (int)(100* failpoint.rad * (1 - TID_FLIP_START_PERCENT)) < radiation_dose - failpoint.rad * TID_FLIP_START_PERCENT){
+			if(rand() % static_cast<int>((100* failpoint.rad * (1 - TID_FLIP_START_PERCENT)) < radiation_dose - failpoint.rad * TID_FLIP_START_PERCENT)){
 				//Bei erreichen der TID -> geringe Wahrscheinlichkeit eines FLIPS
 				flipBit();
 			}
