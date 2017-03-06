@@ -14,8 +14,8 @@
 #define PAGE_AUX (PAGE_DATA / 32)
 #define PAGE_SIZE (PAGE_DATA + PAGE_AUX)
 #define BLOCK_SIZE 128	//128
-#define PLANE_SIZE 4	//8
-#define CELL_SIZE 4		//4
+#define PLANE_SIZE 8	//8
+#define CELL_SIZE 8		//4
 
 #define TID_FLIP_START_PERCENT 0.85
 
