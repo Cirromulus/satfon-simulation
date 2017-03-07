@@ -19,8 +19,8 @@ class f_byte{
 	friend class DebugInterface;
 	friend class FlashCell;
 	DATA_TYPE word = 0xFF, latch_mask = 0x00;
-	AccessValues access = {};
-	Failpoint failpoint = {};
+	AccessValues access = {0,0,0};
+	Failpoint failpoint = {0,0};
 	unsigned int radiation_dose = 0;
 	bool wasFlipped = false;
 

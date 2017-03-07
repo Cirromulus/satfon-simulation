@@ -32,7 +32,7 @@ class debugInterfaceClient {
 
 
 	int clientSock = 0;
-	sockaddr_in rcpt = {};
+	sockaddr_in rcpt;
 	unsigned int rcptSize = sizeof(rcpt);
 	static const unsigned int sendBufSize = sizeof(functionRequest)
 			+ sizeof(unsigned int) * 3;
