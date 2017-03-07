@@ -144,12 +144,12 @@ bool DebugInterface::createServer(){
 	struct sockaddr_in addr;
 
 	for(int i = 0; i < MAX_INSTANCES_LISTENING; i++){
-		memset((char *)&addr, 0, sizeof(addr));
+		memset(&addr, 0, sizeof(addr));
 		addr.sin_family = AF_INET;
 		addr.sin_addr.s_addr = htonl(INADDR_ANY);
 		addr.sin_port = htons(START_PORT+i);
 
-		if (bind(serverSock, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+		if (bind(serverSock, reinterpret_cast<sockaddr *>(&addr), sizeof(addr)) < 0) {
 			fprintf(stderr, "Bind failed with Port %d\n", START_PORT+i);
 		}else{
 			//printf("Bind succeeded with Port %d\n", START_PORT+i);
@@ -162,16 +162,16 @@ bool DebugInterface::createServer(){
 
 void DebugInterface::serverListener(){
 	int bufsize = sizeof(enum functionRequest) + sizeof(unsigned int) * 3;
-	char* buf = (char*)malloc(bufsize);	//plane, block, page
+	char* buf = new char[bufsize];	//plane, block, page
 
-	char* answerBuf = (char*)malloc(PAGE_SIZE * sizeof(AccessValues));	//Has to fit the biggest type
+	char* answerBuf = new char[PAGE_SIZE * sizeof(AccessValues)];	//Has to fit the biggest type
 
-	sockaddr remAddr = {0};
+	sockaddr remAddr;
 	unsigned int remAddrSize = sizeof(remAddr);
 	while (!stop) {
 		int recvlen = recvfrom(serverSock, buf, bufsize, 0, &remAddr, &remAddrSize);
 		if (recvlen == bufsize) {
-			functionRequest function = (functionRequest) buf[0];
+			functionRequest function = static_cast<functionRequest> (buf[0]);
 			unsigned int plane = buf[sizeof(enum functionRequest)];
 			unsigned int block = buf[sizeof(enum functionRequest) + sizeof(unsigned int)];
 			unsigned int page  = buf[sizeof(enum functionRequest) + sizeof(unsigned int) * 2];
@@ -187,8 +187,8 @@ void DebugInterface::serverListener(){
 				fprintf(stderr, "Debuginterface %s: Misaligned read from socket.\n(Was %d, should %d)\n",  typeid(this).name(), recvlen, bufsize);
 		}
 	}
-	free(buf);
-	free(answerBuf);
+	delete[] buf;
+	delete[] answerBuf;
 	close(serverSock);
 }
 
@@ -203,7 +203,7 @@ int DebugInterface::handleRequest(char* answerBuf, functionRequest function, uns
 		for(int i = 0; i < PAGE_SIZE; i++){
 			AccessValues av = getAccessValues(plane, block, page, i);
 			for(unsigned int j = 0; j < sizeof(AccessValues); j++){
-				answerBuf[i*sizeof(AccessValues) + j] = ((char*) &av)[j];
+				answerBuf[i*sizeof(AccessValues) + j] = reinterpret_cast<char*> (&av)[j];
 			}
 		}
 		return PAGE_SIZE*sizeof(AccessValues);
@@ -216,7 +216,7 @@ int DebugInterface::handleRequest(char* answerBuf, functionRequest function, uns
 		for(int i = 0; i < PAGE_SIZE; i++){
 			Failpoint fp = getFailpoint(plane, block, page, i);
 			for(unsigned int j = 0; j < sizeof(Failpoint); j++){
-				answerBuf[i*sizeof(Failpoint) + j] = ((char*) &fp)[j];
+				answerBuf[i*sizeof(Failpoint) + j] = reinterpret_cast<char*> (&fp)[j];
 			}
 		}
 		return PAGE_SIZE*sizeof(Failpoint);
