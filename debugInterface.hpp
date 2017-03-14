@@ -12,7 +12,6 @@
 #include <functional>
 #include <atomic>
 #include <thread>
-#include <sys/socket.h>
 
 #define START_PORT 2084
 #define MAX_INSTANCES_LISTENING 4
@@ -44,21 +43,9 @@ class DebugInterface{
 	int handleRequest(char* answerBuf, functionRequest function, unsigned int plane, unsigned int block, unsigned int page);
 
 public:
-	DebugInterface(FlashCell *mcell) : cell(mcell){
-		stop = {false};
-		if(!createServer()){
-			fprintf(stderr, "Debuginterface %s: Could not create Server!", typeid(this).name());
-		}else{
-			serverListenerThread = std::thread(&DebugInterface::serverListener, this);
-		}
-	}
+	DebugInterface(FlashCell *mcell);
 
-	~DebugInterface(){
-		stop = true;
-		shutdown(serverSock, SHUT_RDWR);
-		//while(!serverListenerThread.joinable()){}
-		serverListenerThread.join();
-	}
+	~DebugInterface();
 
 
 	DATA_TYPE getValue(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress);

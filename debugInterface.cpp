@@ -17,6 +17,22 @@
 
 #include "flashCell.h"
 
+DebugInterface::DebugInterface(FlashCell *mcell) : cell(mcell){
+	stop = {false};
+	if(!createServer()){
+		fprintf(stderr, "Debuginterface %s: Could not create Server!", typeid(this).name());
+	}else{
+		serverListenerThread = std::thread(&DebugInterface::serverListener, this);
+	}
+}
+
+DebugInterface::~DebugInterface(){
+	stop = true;
+	shutdown(serverSock, SHUT_RDWR);
+	//while(!serverListenerThread.joinable()){}
+	serverListenerThread.join();
+}
+
 DATA_TYPE DebugInterface::getValue(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
 	return cell->planes[planeAddress].
 			blocks[blockAddress].
