@@ -17,7 +17,6 @@
 
 #include "flashCell.h"
 
-
 DATA_TYPE DebugInterface::getValue(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
 	return cell->planes[planeAddress].
 			blocks[blockAddress].
@@ -123,23 +122,21 @@ int DebugInterface::getPageDataSize(){
 	return cell->pageDataSize;
 }
 
-#ifdef WITH_DEBUG_SERVER
 void DebugInterface::registerOnChangeFunction(std::function<void()> f){
 	notifyTarget = f;
 	targetSet = true;
 }
-#endif
 
 void DebugInterface::notifyChange(){
-#ifdef WITH_DEBUG_SERVER
+
 	if (targetSet){
 		notifyTarget();
 	}
-#endif
+
 }
 
 bool DebugInterface::createServer(){
-#ifdef WITH_DEBUG_SERVER
+
 	if ((serverSock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 		fprintf(stderr, "cannot create socket");
 		return false;
@@ -160,12 +157,12 @@ bool DebugInterface::createServer(){
 			break;
 		}
 	}
-#endif
+
 	return true;
 }
 
 void DebugInterface::serverListener(){
-#ifdef WITH_DEBUG_SERVER
+
 	int bufsize = sizeof(enum functionRequest) + sizeof(unsigned int) * 3;
 	char* buf = new char[bufsize];	//plane, block, page
 
@@ -195,7 +192,7 @@ void DebugInterface::serverListener(){
 	delete[] buf;
 	delete[] answerBuf;
 	close(serverSock);
-#endif
+
 }
 
 int DebugInterface::handleRequest(char* answerBuf, functionRequest function, unsigned int plane, unsigned int block, unsigned int page){

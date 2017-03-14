@@ -5,15 +5,15 @@
  *      Author: urinator
  */
 
-#ifndef SIMU_DEBUGINTERFACE_HPP_
-#define SIMU_DEBUGINTERFACE_HPP_
+#pragma once
+
 #include "types.hpp"
-#ifdef WITH_DEBUG_SERVER
+
 #include <functional>
 #include <atomic>
 #include <thread>
 #include <sys/socket.h>
-#endif
+
 #define START_PORT 2084
 #define MAX_INSTANCES_LISTENING 4
 
@@ -34,12 +34,9 @@ class DebugInterface{
 	FlashCell* cell;
 	bool targetSet = false;
 	int serverSock = 0;
-#ifdef WITH_DEBUG_SERVER
 	std::function<void()> notifyTarget;
 	std::atomic<bool> stop;
 	std::thread serverListenerThread;
-#endif
-
 	bool createServer();
 
 	void serverListener();
@@ -48,24 +45,19 @@ class DebugInterface{
 
 public:
 	DebugInterface(FlashCell *mcell) : cell(mcell){
-#ifdef WITH_DEBUG_SERVER
 		stop = {false};
 		if(!createServer()){
 			fprintf(stderr, "Debuginterface %s: Could not create Server!", typeid(this).name());
 		}else{
 			serverListenerThread = std::thread(&DebugInterface::serverListener, this);
 		}
-#endif
 	}
 
 	~DebugInterface(){
-#ifdef WITH_DEBUG_SERVER
 		stop = true;
 		shutdown(serverSock, SHUT_RDWR);
 		//while(!serverListenerThread.joinable()){}
-
 		serverListenerThread.join();
-#endif
 	}
 
 
@@ -100,13 +92,8 @@ public:
 	int getBlockSize();
 	int getPageSize();
 	int getPageDataSize();
-#ifdef WITH_DEBUG_SERVER
+
 	void registerOnChangeFunction(std::function<void()> f);
-#endif
 
 	void notifyChange();
 };
-
-
-
-#endif /* SIMU_DEBUGINTERFACE_HPP_ */
