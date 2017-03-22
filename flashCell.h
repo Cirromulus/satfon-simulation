@@ -131,19 +131,16 @@ class Block{
 	friend class DebugInterface;
 	friend class FlashCell;
 	std::vector<Page> pages;
-	//Failparam fpa;
 public:
 	Block(Failparam f){
 		pages.reserve(BLOCK_SIZE);
 		for(int i = 0; i < BLOCK_SIZE; i++){
 			pages.push_back(Page(f));
 		}
-		//fpa = f;
 	}
-	//~block(){} //Notwendig?
 
 	Page *getPage(unsigned int address){
-		if (address > BLOCK_SIZE){
+		if (address >= BLOCK_SIZE){
 			fprintf(stderr, "ACCESS (READ/WRITE) from non-existent Block-address (<%d, was: %d)\n", BLOCK_SIZE, address);
 			return NULL;
 		}
@@ -179,7 +176,7 @@ public:
 	//~plane(){} //Notwendig?
 
 	Block *getBlock(unsigned int address){
-		if (address > PLANE_SIZE){
+		if (address >= PLANE_SIZE){
 			fprintf(stderr, "ACCESS (READ/WRITE) to non-existent Plane-address (<%d, was: %d)\n", PLANE_SIZE, address);
 			return NULL;
 		}
