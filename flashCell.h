@@ -4,12 +4,12 @@
 #include "debugInterface.hpp"
 #include "types.hpp"
 
-#include <stdio.h>
-#include <random>
 #include <chrono>
+#include <random>
 #include <iostream>
 #include <vector>
-#include <signal.h> //just for debug
+//#include <signal.h> //just for debug
+//#include <stdio.h>
 
 #include "debugInterface.hpp"
 #include "types.hpp"
