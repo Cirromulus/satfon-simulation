@@ -18,7 +18,7 @@
 #include "flashCell.h"
 
 DebugInterface::DebugInterface(FlashCell *mcell) : cell(mcell){
-	stop = {false};
+	stop = false;
 	if(!createServer()){
 		fprintf(stderr, "Debuginterface %s: Could not create Server!", typeid(this).name());
 	}else{
