@@ -14,7 +14,7 @@
 #define PAGE_AUX (PAGE_DATA / 32)
 #define PAGE_SIZE (PAGE_DATA + PAGE_AUX)
 #define BLOCK_SIZE 64	//128
-#define PLANE_SIZE 4	//8
+#define PLANE_SIZE 8	//8
 //#define CELL_SIZE 1024
 #define CELL_SIZE 4	//4
 
