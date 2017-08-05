@@ -16,7 +16,7 @@
 #define BLOCK_SIZE 64	//128
 #define PLANE_SIZE 8	//8
 //#define CELL_SIZE 1024
-#define CELL_SIZE 4	//4
+#define CELL_SIZE 8	//4
 
 #define TID_FLIP_START_PERCENT 0.85
 
