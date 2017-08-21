@@ -212,6 +212,10 @@ void DebugInterface::serverListener(){
 }
 
 int DebugInterface::handleRequest(char* answerBuf, functionRequest function, unsigned int plane, unsigned int block, unsigned int page){
+	if(plane >= CELL_SIZE || block >= PLANE_SIZE || page >= BLOCK_SIZE){
+		memset(answerBuf, 0, PAGE_SIZE*sizeof(DATA_TYPE));
+		return PAGE_SIZE*sizeof(DATA_TYPE);
+	}
 	switch(function){
 	case F_GETVALUE:
 		for(int i = 0; i < PAGE_SIZE; i++){
