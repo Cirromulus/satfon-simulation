@@ -4,12 +4,11 @@ import os
 print("SIMU")
 Import('envGlobal')
 
-#envGlobal.Append(CPPPATH=[os.path.abspath('.')])
 envGlobal.Append(CPPPATH=[os.path.abspath('..')])
 
 env = envGlobal.Clone()
 
-envGlobal.Append(LIBS=[
+env.Append(LIBS=[
 	'pthread',
 ])
 
