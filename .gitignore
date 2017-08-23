@@ -1,2 +1,3 @@
-flashView/GeneratedFiles/
+*.sconsign.dblite
+moc_flashviewer.cc
 *.pyc
