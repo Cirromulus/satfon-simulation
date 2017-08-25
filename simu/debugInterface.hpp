@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "config.hpp"
+#include "types.hpp"
 
 #include <functional>
 #include <atomic>
@@ -18,6 +18,7 @@
 
 enum functionRequest{
 	F_PING,
+	F_GETCONFIG,
 	F_GETVALUE,
 	F_GETACCESSVALUES,
 	F_GETRADIATIONDOSE,
@@ -26,6 +27,12 @@ enum functionRequest{
 	F_GETLATCHMASK
 };
 
+struct FlashConfiguration{
+	unsigned int pageSize;
+	unsigned int blockSize;
+	unsigned int planeSize;
+	unsigned int cellSize;
+};
 
 class FlashCell;
 

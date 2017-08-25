@@ -12,7 +12,7 @@ endif
 
 VIEWERDIR=./flashView/
 
-build:
+viewer:
 	@scons $(MAKEJOBS) -C $(VIEWERDIR)
 	
 clean:

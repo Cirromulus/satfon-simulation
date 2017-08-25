@@ -7,7 +7,6 @@ AddOption(
     help='release build',
     default=False)
     
-    
 print("flashView")
 
 rootpath = Dir('..').abspath
@@ -15,39 +14,52 @@ extpath = os.path.join(rootpath, '../')
 buildpath = os.path.join(rootpath, 'build')
 qt5dir = "/usr/include/qt5"
 
-env = Environment(
+envGlobal = Environment(
 			toolpath=[
 					os.path.join(extpath, 'scons-build-tools/site_tools'),
 					os.path.join(rootpath, 'ext'),
 					],
             tools=['utils_buildformat'],
             BASEPATH=rootpath,
-            ENV=os.environ)
+            envGlobal=os.environ)
 
 if GetOption('release_build'):
 	buildfolder = os.path.join(buildpath, 'release')
-	env['CCFLAGS_optimize'] = ['-O2']
+	envGlobal['CCFLAGS_optimize'] = ['-O2']
 else:
 	buildfolder = os.path.join(buildpath, 'debug')
-	env.ParseFlags('-DDEBUG')
-	env['CCFLAGS_optimize'] = ['-O0']
+	envGlobal.ParseFlags('-DDEBUG')
+	envGlobal['CCFLAGS_optimize'] = ['-O0']
 
 
-env['BUILDPATH'] = os.path.abspath(buildfolder)
-env['ROOTPATH'] = rootpath
-env['QT5DIR'] = qt5dir
-env['ENV']['PKG_CONFIG_PATH'] = os.path.join(qt5dir, 'lib/pkgconfig')
-env['CXXFLAGS_language'] = ['-std=c++11']
+envGlobal['BUILDPATH'] = os.path.abspath(buildfolder)
+envGlobal['ROOTPATH'] = rootpath
+envGlobal['QT5DIR'] = qt5dir
+envGlobal['envGlobal']['PKG_CONFIG_PATH'] = os.path.join(qt5dir, 'lib/pkgconfig')
+envGlobal['CXXFLAGS_language'] = ['-std=c++11']
+#envGlobal.AppendUnique(LIBPATH=['$BUILDPATH/lib'])
 
-env.Tool('settings_buildpath')
+envGlobal.Tool('compiler_hosted_gcc')
+envGlobal.Tool('settings_buildpath')
+
+envGlobal.Append(CPPPATH=[
+	os.path.join(rootpath, 'simu/config'),
+])
+
+envGlobal.SConscript([
+    os.path.join(rootpath, 'simu/SConscript'),
+    ],
+	exports='envGlobal'
+)
+
+env = envGlobal.Clone()
 env.Tool('qt5')
 
-files = Glob('*.cpp')
-
 env.Append(CPPPATH=[
-	os.path.abspath('.'),
 	os.path.abspath('./GeneratedFiles'),
 	])
+
+files = Glob('*.cpp')
 
 env.EnableQt5Modules(['QtWidgets'])
 
@@ -55,5 +67,5 @@ env.Append(CCFLAGS = '-fPIC')
 
 program = env.Program('flashViewer', files) 
 install = env.Install('$BUILDPATH', program)
-env.Alias('flashView', install)
-
+env.Alias('flashViewer', '$BUILDPATH')
+env.Default('flashViewer')

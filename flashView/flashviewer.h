@@ -8,7 +8,7 @@
 #include <QtWidgets>
 #include <random>
 #include <string>
-#include "ui_cellviewer.h"
+#include <ui_cellviewer.h>
 #include "../simu/flashCell.h"
 #include "../simu/debugInterfaceClient.hpp"
 
@@ -46,7 +46,7 @@ Linke Pfeiltaste - Plane herunterschalten\n\
 'H' - Diesen Hilfetext umschalten\n\
 'Q' - CellViewer beenden\n\
 " };
-
+	void rescaleWindow();
 	void randomize();
 };
 

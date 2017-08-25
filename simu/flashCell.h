@@ -2,7 +2,7 @@
 #define __FLASHCELL__
 
 #include "debugInterface.hpp"
-#include "config.hpp"
+#include <simu/config.hpp>
 
 #include <chrono>
 #include <random>

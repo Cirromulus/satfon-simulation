@@ -9,7 +9,6 @@
 #define SIMU_DEBUGINTERFACECLIENT_HPP_
 
 #include "debugInterface.hpp"
-#include "config.hpp"
 
 #include <functional>
 #include <atomic>
@@ -27,7 +26,7 @@ class debugInterfaceClient {
 	Failpoint fpBuf[PAGE_SIZE];
 	bool bitFlippedBuf[PAGE_SIZE];
 	DATA_TYPE latchBuf[PAGE_SIZE];
-
+	FlashConfiguration config;
 
 	int clientSock = 0;
 	sockaddr_in rcpt;
@@ -45,29 +44,26 @@ public:
 	debugInterfaceClient(int number) {
 		if (!initClient(START_PORT + number))
 			fprintf(stderr, "Could not init Clientsocket!\n");
+		//default values
+		config.pageSize = 528;
+		config.blockSize = 64;
+		config.planeSize = 4;
+		config.cellSize = 4;
 	}
 
 	debugInterfaceClient() :
 			debugInterfaceClient(0) {
 	}
 
-	unsigned int getPageSize(){
-		return PAGE_SIZE;
-	}
-
-	unsigned int getBlockSize(){
-		return BLOCK_SIZE;
-	}
-
-	unsigned int getPlaneSize(){
-		return PLANE_SIZE;
-	}
-
-	unsigned int getCellSize(){
-		return CELL_SIZE;
-	}
-
 	bool isConnected();
+
+	unsigned int getPageSize();
+
+	unsigned int getBlockSize();
+
+	unsigned int getPlaneSize();
+
+	unsigned int getCellSize();
 
 	DATA_TYPE* getValue(unsigned int planeAddress, unsigned int blockAddress,
 			unsigned int pageAddress);

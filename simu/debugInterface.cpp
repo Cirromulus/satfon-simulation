@@ -216,7 +216,11 @@ int DebugInterface::handleRequest(char* answerBuf, functionRequest function, uns
 		memset(answerBuf, 0, PAGE_SIZE*sizeof(DATA_TYPE));
 		return PAGE_SIZE*sizeof(DATA_TYPE);
 	}
+	FlashConfiguration config = {cell->pageSize, cell->blockSize, cell->planeSize, cell->cellSize};
 	switch(function){
+	case F_GETCONFIG:
+		memcpy(answerBuf, &config, sizeof(FlashConfiguration));
+		return sizeof(FlashConfiguration);
 	case F_GETVALUE:
 		for(int i = 0; i < PAGE_SIZE; i++){
 			answerBuf[i*sizeof(DATA_TYPE)] = getValue(plane, block, page, i);

@@ -65,9 +65,25 @@ int debugInterfaceClient::recEverything(void* buf, unsigned int size){
 }
 
 bool debugInterfaceClient::isConnected(){
-	sendRequest(F_PING,0,0,0);
-	char b;
-	return recEverything(&b, 1) > 0;
+	sendRequest(F_GETCONFIG,0,0,0);
+	return recEverything(&config, sizeof(FlashConfiguration)) == sizeof(FlashConfiguration);
+}
+
+
+unsigned int debugInterfaceClient::getPageSize(){
+	return config.pageSize;
+}
+
+unsigned int debugInterfaceClient::getBlockSize(){
+	return config.blockSize;
+}
+
+unsigned int debugInterfaceClient::getPlaneSize(){
+	return config.planeSize;
+}
+
+unsigned int debugInterfaceClient::getCellSize(){
+	return config.cellSize;
 }
 
 DATA_TYPE* debugInterfaceClient::getValue(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress){

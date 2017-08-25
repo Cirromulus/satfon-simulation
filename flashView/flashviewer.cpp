@@ -21,7 +21,7 @@ flashViewer::~flashViewer()
 }
 
 void flashViewer::drawMainPage(QImage* mem){
-	int pageSize = dbgIf->getPageSize();
+	int pageSize  = dbgIf->getPageSize();
 	int blockSize = dbgIf->getBlockSize();
 	int planeSize = dbgIf->getPlaneSize();
 
@@ -106,10 +106,6 @@ void flashViewer::drawMainPage(QImage* mem){
 void flashViewer::paintEvent(QPaintEvent *){
 	QPainter painter(this);
 
-	int pageSize = dbgIf->getPageSize();
-	int blockSize = dbgIf->getBlockSize();
-	int planeSize = dbgIf->getPlaneSize();
-
 	painter.scale(size_factor, size_factor);
 
 	//Draw Header
@@ -128,9 +124,11 @@ void flashViewer::paintEvent(QPaintEvent *){
 			MIN_WIDTH/2 - 2*headerPadding, headerHeight - headerPadding),
 			Qt::AlignVCenter | Qt::AlignRight, planeNumber);
 
-	QImage memory(pageSize, (blockSize + 1)*planeSize, QImage::Format_RGB444);
+	
 	//QPainter mempaint(&memory);
 	if(dbgIf->isConnected()){
+		rescaleWindow();
+		QImage memory(dbgIf->getPageSize(), (dbgIf->getBlockSize() + 1)*dbgIf->getPlaneSize(), QImage::Format_RGB444);
 		drawMainPage(&memory);
 		painter.drawImage(QPoint(0, headerHeight), memory);
 	}else{
@@ -164,6 +162,20 @@ void flashViewer::paintEvent(QPaintEvent *){
 	update();
 }
 
+void flashViewer::rescaleWindow(){
+	int w = dbgIf->getPageSize();
+	int h = headerHeight + (dbgIf->getBlockSize() + 1)*dbgIf->getPlaneSize();
+	w *= size_factor;
+	h *= size_factor;
+	if(w > 0 && h > 0){
+		setFixedSize(QSize(w,h));
+		resize(w,h);
+	}else{
+		printf("Something is wrong with the size values.\n"
+		"Got w: %d, got h: %d\n", w, h);
+	}
+}
+
 void flashViewer::keyPressEvent(QKeyEvent *e)
 {
 	switch (e->key()){
@@ -189,12 +201,7 @@ void flashViewer::keyPressEvent(QKeyEvent *e)
 	case Qt::Key_G:
 	{
 		size_factor = size_factor + .5 > 3 ? 1 : size_factor + .5;
-		int w = dbgIf->getPageSize();
-		int h = headerHeight + (dbgIf->getBlockSize() + 1)*dbgIf->getPlaneSize();
-		w *= size_factor;
-		h *= size_factor;
-		setFixedSize(QSize(w,h));
-		resize(w,h);
+		rescaleWindow();
 		break;
 	}
 	case Qt::Key_Q:
