@@ -10,7 +10,7 @@
 #include <string>
 #include <ui_cellviewer.h>
 #include "../simu/flashCell.h"
-#include "../simu/debugInterfaceClient.hpp"
+#include "../simu/flashDebugInterfaceClient.hpp"
 
 enum viewType { USAGE, VALUE, MIXED, _size};	//Auch die Strings in cellviewer.cpp ändern!
 
@@ -19,7 +19,7 @@ class flashViewer : public QWidget
 	Q_OBJECT
 
 public:
-	flashViewer(debugInterfaceClient* mdbgif, QWidget *mparent = 0);
+	flashViewer(FlashDebugInterfaceClient* mdbgif, QWidget *mparent = 0);
 	~flashViewer();
 	void paintEvent(QPaintEvent *);
 	void keyPressEvent(QKeyEvent *e);
@@ -28,7 +28,7 @@ public:
 	void notifyChange();
 private:
 	Ui::cellViewerClass ui;
-	debugInterfaceClient *dbgIf;
+	FlashDebugInterfaceClient *dbgIf;
 	viewType view = VALUE;
 	unsigned int active_plane = 0;
 	bool help_sign = false;

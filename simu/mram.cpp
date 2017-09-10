@@ -6,12 +6,37 @@
  */
 
 #include "mram.hpp"
+#include <stdio.h>
+#include <string.h>
 
-Mram::Mram(unsigned int size) : mSize(size){
+Mram::Mram(unsigned int size) :
+		DebugServer(mramDebugServerBlockwidth, mramDebugServerStartPort), mSize(size){
 	mData = new unsigned char[size];
+	config = {mramDebugServerBlockwidth, size};
 }
 Mram::~Mram(){
 	delete[] mData;
+}
+
+int Mram::handleRequest(char* answerBuf, functionRequest function, char *params){
+	unsigned int address = params[0];
+	if(address+mramDebugServerBlockwidth > mSize){
+		memset(answerBuf, 0, mramDebugServerBlockwidth);
+		return mramDebugServerBlockwidth;
+	}
+	switch(function){
+	case F_GETCONFIG:
+		memcpy(answerBuf, &config, sizeof(MramConfiguration));
+		return sizeof(MramConfiguration);
+
+	case F_GETVALUE:
+		memcpy(answerBuf, &mData[address], mramDebugServerBlockwidth);
+		return mramDebugServerBlockwidth;
+	default:
+		break;
+	}
+	memset(answerBuf, 0, mramDebugServerBlockwidth);
+	return mramDebugServerBlockwidth;
 }
 
 unsigned char Mram::getByte(unsigned int address){

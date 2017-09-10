@@ -1,8 +1,10 @@
 #include "flashviewer.h"
+#include <QtWidgets/QApplication>
+
 const char *viewTypeString[] = { "Wear", "Value", "Wear/value mixed" };
 
 
-flashViewer::flashViewer(debugInterfaceClient* mdbgIf, QWidget *mparent)
+flashViewer::flashViewer(FlashDebugInterfaceClient* mdbgIf, QWidget *mparent)
 	: QWidget(mparent), dbgIf(mdbgIf)
 {
 	//experimental

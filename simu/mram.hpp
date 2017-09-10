@@ -7,9 +7,22 @@
 
 #pragma once
 
-class Mram{
+#include "debugServer.hpp"
+
+static constexpr unsigned int mramDebugServerStartPort = 3084;
+static constexpr unsigned int mramDebugServerBlockwidth = 512;
+
+struct MramConfiguration{
+	unsigned int blockWidth;
+	unsigned int size;
+};
+
+class Mram : private DebugServer{
 	unsigned int mSize;
 	unsigned char *mData;
+	MramConfiguration config;
+
+	int handleRequest(char* answerBuf, functionRequest function, char *params) override;
 public:
 	Mram(unsigned int size);
 	~Mram();

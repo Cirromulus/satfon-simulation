@@ -16,6 +16,7 @@ files  = env.Glob('*.cpp')
 
 library = env.StaticLibrary('simu', files)
 envGlobal.Append(LIBS=[
+	"pthread",
 	library,
 ])
 envGlobal.Install('$BUILDPATH/lib', library)

@@ -3,7 +3,7 @@
 
 int main(int argc, char *argv[])
 {
-	debugInterfaceClient dbgIf;
+	FlashDebugInterfaceClient dbgIf;
 
 	QApplication a (argc, argv);
 	flashViewer w (&dbgIf);

@@ -32,8 +32,6 @@ int FlashCell::writePage(unsigned int planeAddress, unsigned int blockAddress, u
 		return -1;
 	}
 	int ret = planes[planeAddress].getBlock(blockAddress)->getPage(pageAddress)->writePage(data);
-	//mutex.unlock();
-	dbgIf->notifyChange();
 	return ret;
 }
 
@@ -48,11 +46,9 @@ int FlashCell::eraseBlock(unsigned int planeAddress, unsigned int blockAddress){
 		return -1;
 	}
 	int ret = planes[planeAddress].getBlock(blockAddress)->eraseBlock();
-	//mutex.unlock();
-	dbgIf->notifyChange();
 	return ret;
 }
 
-DebugInterface* FlashCell::getDebugInterface(){
+FlashDebugInterface* FlashCell::getDebugInterface(){
 	return dbgIf;
 }

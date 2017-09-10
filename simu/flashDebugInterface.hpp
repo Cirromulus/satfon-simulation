@@ -8,24 +8,7 @@
 #pragma once
 
 #include "types.hpp"
-
-#include <functional>
-#include <atomic>
-#include <thread>
-
-#define START_PORT 2084
-#define MAX_INSTANCES_LISTENING 4
-
-enum functionRequest{
-	F_PING,
-	F_GETCONFIG,
-	F_GETVALUE,
-	F_GETACCESSVALUES,
-	F_GETRADIATIONDOSE,
-	F_GETFAILPOINT,
-	F_WASBITFLIPPED,
-	F_GETLATCHMASK
-};
+#include "debugServer.hpp"
 
 struct FlashConfiguration{
 	unsigned int pageSize;
@@ -34,25 +17,18 @@ struct FlashConfiguration{
 	unsigned int cellSize;
 };
 
+static constexpr unsigned int flashDebugServerStartPort = 2084;
 class FlashCell;
 
-class DebugInterface{
+class FlashDebugInterface : private DebugServer{
 	FlashCell* cell;
 	bool targetSet = false;
-	int serverSock = 0;
-	std::function<void()> notifyTarget;
-	std::atomic<bool> stop;
-	std::thread serverListenerThread;
-	bool createServer();
 
-	void serverListener();
-
-	int handleRequest(char* answerBuf, functionRequest function, unsigned int plane, unsigned int block, unsigned int page);
-
+	int handleRequest(char* answerBuf, functionRequest function, char *params) override;
 public:
-	DebugInterface(FlashCell *mcell);
+	FlashDebugInterface(FlashCell *mcell);
 
-	~DebugInterface();
+	~FlashDebugInterface();
 
 
 	DATA_TYPE getValue(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress);
@@ -86,8 +62,4 @@ public:
 	int getBlockSize();
 	int getPageSize();
 	int getPageDataSize();
-
-	void registerOnChangeFunction(std::function<void()> f);
-
-	void notifyChange();
 };

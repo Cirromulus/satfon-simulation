@@ -1,19 +1,17 @@
 #ifndef __FLASHCELL__
 #define __FLASHCELL__
 
-#include "debugInterface.hpp"
 #include <simu/config.hpp>
 
 #include <chrono>
 #include <random>
 #include <iostream>
 #include <vector>
-//#include <signal.h> //just for debug
-//#include <stdio.h>
 
+#include "flashDebugInterface.hpp"
 
 class f_byte{
-	friend class DebugInterface;
+	friend class FlashDebugInterface;
 	friend class FlashCell;
 	DATA_TYPE word = 0xFF, latch_mask = 0x00;
 	AccessValues access = {0,0,0};
@@ -68,7 +66,7 @@ public:
 };
 
 class Page{
-	friend class DebugInterface;
+	friend class FlashDebugInterface;
 	friend class FlashCell;
 	std::vector<f_byte> bytes;
 	Failparam fpa;
@@ -125,7 +123,7 @@ public:
 };
 
 class Block{
-	friend class DebugInterface;
+	friend class FlashDebugInterface;
 	friend class FlashCell;
 	std::vector<Page> pages;
 public:
@@ -160,7 +158,7 @@ public:
 };
 
 class Plane{
-	friend class DebugInterface;
+	friend class FlashDebugInterface;
 	friend class FlashCell;
 	std::vector<Block> blocks;
 public:
@@ -188,9 +186,9 @@ public:
 };
 
 class FlashCell{
-	friend class DebugInterface;
+	friend class FlashDebugInterface;
 	std::vector<Plane> planes;
-	DebugInterface* dbgIf;
+	FlashDebugInterface* dbgIf;
 	//std::mutex write_mutex;
 public:
 	FlashCell(Failparam f = {100000, 0, 0, 0}){
@@ -199,7 +197,7 @@ public:
 		for(int i = 0; i < CELL_SIZE; i++){
 			planes.push_back(Plane(f));
 		}
-		dbgIf = new DebugInterface(this);
+		dbgIf = new FlashDebugInterface(this);
 	}
 
 	~FlashCell(){
@@ -224,6 +222,6 @@ public:
 
 	int eraseBlock(unsigned int planeAddress, unsigned int blockAddress);
 
-	DebugInterface* getDebugInterface();
+	FlashDebugInterface* getDebugInterface();
 };
 #endif
