@@ -2,3 +2,7 @@
 moc_flashviewer.cc
 *.pyc
 build/
+.cproject
+.project
+.settings/
+
