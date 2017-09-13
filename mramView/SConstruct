@@ -1,0 +1,71 @@
+#FlashView
+import os
+
+AddOption(
+    '--release-build',
+    action='store_true',
+    help='release build',
+    default=False)
+    
+print("mramView")
+
+rootpath = Dir('..').abspath
+extpath = os.path.join(rootpath, '../')
+buildpath = os.path.join(rootpath, 'build')
+qt5dir = "/usr/include/qt5"
+
+envGlobal = Environment(
+			toolpath=[
+					os.path.join(extpath, 'scons-build-tools/site_tools'),
+					os.path.join(rootpath, 'ext'),
+					],
+            tools=['utils_buildformat'],
+            BASEPATH=rootpath,
+            envGlobal=os.environ)
+
+if GetOption('release_build'):
+	buildfolder = os.path.join(buildpath, 'release')
+	envGlobal['CCFLAGS_optimize'] = ['-O2']
+else:
+	buildfolder = os.path.join(buildpath, 'debug')
+	envGlobal.ParseFlags('-DDEBUG')
+	envGlobal['CCFLAGS_optimize'] = ['-O0']
+
+
+envGlobal['BUILDPATH'] = os.path.abspath(buildfolder)
+envGlobal['ROOTPATH'] = rootpath
+envGlobal['QT5DIR'] = qt5dir
+envGlobal['envGlobal']['PKG_CONFIG_PATH'] = os.path.join(qt5dir, 'lib/pkgconfig')
+envGlobal['CXXFLAGS_language'] = ['-std=c++11']
+#envGlobal.AppendUnique(LIBPATH=['$BUILDPATH/lib'])
+
+envGlobal.Tool('compiler_hosted_gcc')
+envGlobal.Tool('settings_buildpath')
+
+envGlobal.Append(CPPPATH=[
+	os.path.join(rootpath, 'simu/config'),
+])
+
+envGlobal.SConscript([
+    os.path.join(rootpath, 'simu/SConscript'),
+    ],
+	exports='envGlobal'
+)
+
+env = envGlobal.Clone()
+env.Tool('qt5')
+
+env.Append(CPPPATH=[
+	os.path.abspath('./GeneratedFiles'),
+	])
+
+files = Glob('*.cpp')
+
+env.EnableQt5Modules(['QtWidgets'])
+
+env.Append(CCFLAGS = '-fPIC')
+
+program = env.Program('flashViewer', files) 
+install = env.Install('$BUILDPATH', program)
+env.Alias('flashViewer', '$BUILDPATH')
+env.Default('flashViewer')
