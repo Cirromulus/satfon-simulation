@@ -10,10 +10,21 @@ else
   MAKEJOBS=-j$(NPROCS)
 endif
 
-VIEWERDIR=./flashView/
+FVIEWERDIR=./flashView/
+MVIEWERDIR=./mramView/
 
-viewer:
-	@scons $(MAKEJOBS) -C $(VIEWERDIR)
+all: mview fview
+
+fview:
+	@scons $(MAKEJOBS) -C $(FVIEWERDIR)
+
+mview:
+	@scons $(MAKEJOBS) -C $(MVIEWERDIR)
+
+example:
+	@scons $(MAKEJOBS) -C test/
 	
 clean:
-	@scons -C $(VIEWERDIR) -c
+	@scons -C $(FVIEWERDIR) -c
+	@scons -C $(MVIEWERDIR) -c
+	@scons -C test/ -c

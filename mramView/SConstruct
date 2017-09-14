@@ -65,7 +65,7 @@ env.EnableQt5Modules(['QtWidgets'])
 
 env.Append(CCFLAGS = '-fPIC')
 
-program = env.Program('flashViewer', files) 
+program = env.Program('mramViewer', files) 
 install = env.Install('$BUILDPATH', program)
-env.Alias('flashViewer', '$BUILDPATH')
-env.Default('flashViewer')
+env.Alias('mramViewer', '$BUILDPATH')
+env.Default('mramViewer')

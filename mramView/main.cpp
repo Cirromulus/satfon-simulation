@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[])
 {
-	FlashDebugInterfaceClient dbgIf;
+	MramDebugInterfaceClient dbgIf;
 
 	QApplication a (argc, argv);
 	MramViewer w (&dbgIf);

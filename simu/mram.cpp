@@ -10,9 +10,11 @@
 #include <string.h>
 
 Mram::Mram(unsigned int size) :
-		DebugServer(mramDebugServerBlockwidth, mramDebugServerStartPort), mSize(size){
+		DebugServer(mramDebugServerBlockwidth, mramDebugServerStartPort, sizeof(unsigned int))
+		, mSize(size){
 	mData = new unsigned char[size];
 	config = {mramDebugServerBlockwidth, size};
+	memset(mData, 0, size);
 }
 Mram::~Mram(){
 	delete[] mData;
@@ -20,7 +22,7 @@ Mram::~Mram(){
 
 int Mram::handleRequest(char* answerBuf, functionRequest function, char *params){
 	unsigned int address = params[0];
-	if(address+mramDebugServerBlockwidth > mSize){
+	if(address + mramDebugServerBlockwidth > mSize){
 		memset(answerBuf, 0, mramDebugServerBlockwidth);
 		return mramDebugServerBlockwidth;
 	}
@@ -30,6 +32,8 @@ int Mram::handleRequest(char* answerBuf, functionRequest function, char *params)
 		return sizeof(MramConfiguration);
 
 	case F_GETVALUE:
+		//printf("Got request from %u to %u\n",
+		//		address, address + mramDebugServerBlockwidth);
 		memcpy(answerBuf, &mData[address], mramDebugServerBlockwidth);
 		return mramDebugServerBlockwidth;
 	default:

@@ -9,28 +9,23 @@
 #include <random>
 #include <string>
 #include <ui_cellviewer.h>
-#include "../simu/flashCell.h"
-#include "../simu/flashDebugInterfaceClient.hpp"
+#include "../simu/mramDebugInterfaceClient.hpp"
 
-enum viewType { USAGE, VALUE, MIXED, _size};	//Auch die Strings in cellviewer.cpp ändern!
-
-class flashViewer : public QWidget
+class MramViewer : public QWidget
 {
 	Q_OBJECT
-
+	unsigned int blockWidth = 512;
+	unsigned int heightInPixels = 512;
 public:
-	flashViewer(FlashDebugInterfaceClient* mdbgif, QWidget *mparent = 0);
-	~flashViewer();
+	MramViewer(MramDebugInterfaceClient* mdbgif, QWidget *mparent = 0);
+	~MramViewer();
 	void paintEvent(QPaintEvent *);
 	void keyPressEvent(QKeyEvent *e);
 	void drawMainPage(QImage* mem);
-
-	void notifyChange();
 private:
 	Ui::cellViewerClass ui;
-	FlashDebugInterfaceClient *dbgIf;
-	viewType view = VALUE;
-	unsigned int active_plane = 0;
+	MramDebugInterfaceClient *dbgIf;
+	unsigned int activePage = 0;
 	bool help_sign = false;
 	double size_factor = 1;
 	unsigned int headerHeight = 30;
@@ -38,16 +33,13 @@ private:
 	unsigned int helpMargin = 50;
 	unsigned int helpPadding = 5;
 	const char *helptext = {
-"Leertaste - Ansicht umschalten\n\
-Rechte Pfeiltaste - Plane hochschalten\n\
+"Rechte Pfeiltaste - Plane hochschalten\n\
 Linke Pfeiltaste - Plane herunterschalten\n\
-'S' - Zufällige Werte in die ausgewählte Plane schreiben\n\
 'G' - Größe umschalten\n\
 'H' - Diesen Hilfetext umschalten\n\
-'Q' - CellViewer beenden\n\
+'Q' - MramViewer beenden\n\
 " };
-	void rescaleWindow();
-	void randomize();
+	void rescaleWindow(bool force = false);
 };
 
 #endif // CELLVIEWER_H

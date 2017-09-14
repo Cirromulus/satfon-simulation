@@ -15,8 +15,8 @@
 #include <string.h>
 
 
-DebugServer::DebugServer(unsigned int pageWidth, unsigned int startPort) :
-	mPageWidth(pageWidth), mStartPort(startPort){
+DebugServer::DebugServer(unsigned int pageWidth, unsigned int startPort, unsigned int requestSize) :
+	mPageWidth(pageWidth), mStartPort(startPort), mRequestSize(requestSize){
 	stop = false;
 	if(!createServer()){
 		fprintf(stderr, "DebugServer %s: Could not create Server!", typeid(this).name());
@@ -62,7 +62,7 @@ bool DebugServer::createServer(){
 
 void DebugServer::serverListener(){
 
-	int bufsize = sizeof(enum functionRequest) + sizeof(unsigned int) * 3;
+	int bufsize = sizeof(enum functionRequest) + mRequestSize;
 	char* buf = new char[bufsize];
 
 	char* answerBuf = new char[mPageWidth * sizeof(AccessValues)];	//Has to fit the biggest type
@@ -74,15 +74,13 @@ void DebugServer::serverListener(){
 		if (recvlen == bufsize) {
 			functionRequest function = static_cast<functionRequest> (buf[0]);
 
-			//printf("received request: function %d, p: %u, b: %u, p: %u\n",
-			//		function, plane, block, page);
 			int answerSize = handleRequest(answerBuf, function, &buf[sizeof(enum functionRequest)]);
 			if(sendto(serverSock, answerBuf, answerSize, 0, &remAddr, remAddrSize) < 0)
 				fprintf(stderr, "Failed to send data.\n");
 
 		}else{
 			if(recvlen > 0)
-				fprintf(stderr, "DebugServer %s: Misaligned read from socket.\n(Was %d, should %d)\n",  typeid(this).name(), recvlen, bufsize);
+				fprintf(stderr, "DebugServer: Misaligned read from socket.\n(Was %d, should %d)\n", recvlen, bufsize);
 		}
 	}
 	delete[] buf;

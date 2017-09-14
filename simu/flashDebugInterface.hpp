@@ -18,6 +18,7 @@ struct FlashConfiguration{
 };
 
 static constexpr unsigned int flashDebugServerStartPort = 2084;
+
 class FlashCell;
 
 class FlashDebugInterface : private DebugServer{

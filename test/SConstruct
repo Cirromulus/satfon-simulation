@@ -1,0 +1,46 @@
+#FlashView
+import os
+
+print("Simu Tests / Examples")
+
+rootpath = Dir('..').abspath
+extpath = os.path.join(rootpath, '../')
+buildpath = os.path.join(rootpath, 'build')
+
+envGlobal = Environment(
+			toolpath=[
+					os.path.join(extpath, 'scons-build-tools/site_tools'),
+					os.path.join(rootpath, 'ext'),
+					],
+            tools=['utils_buildformat'],
+            BASEPATH=rootpath,
+            envGlobal=os.environ)
+
+envGlobal.ParseFlags('-DDEBUG')
+
+
+envGlobal['BUILDPATH'] = os.path.abspath(buildpath)
+envGlobal['ROOTPATH'] = rootpath
+envGlobal['CXXFLAGS_language'] = ['-std=c++11']
+#envGlobal.AppendUnique(LIBPATH=['$BUILDPATH/lib'])
+
+envGlobal.Tool('compiler_hosted_gcc')
+envGlobal.Tool('settings_buildpath')
+
+envGlobal.Append(CPPPATH=[
+	os.path.join(rootpath, 'simu/config'),
+])
+
+envGlobal.SConscript([
+    os.path.join(rootpath, 'simu/SConscript'),
+    ],
+	exports='envGlobal'
+)
+
+
+program = envGlobal.Program('flashExample', "flashExample.cpp") 
+envGlobal.Install('$BUILDPATH', program)
+program = envGlobal.Program('mramExample', "mramExample.cpp")
+envGlobal.Install('$BUILDPATH', program)
+envGlobal.Default('$BUILDPATH/flashExample')
+envGlobal.Default('$BUILDPATH/mramExample')

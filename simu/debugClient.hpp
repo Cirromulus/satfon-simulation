@@ -18,13 +18,12 @@ class DebugClient{
 	sockaddr_in rcpt;
 	unsigned int rcptSize;
 	unsigned int mSendBufSize;
-	char sendBuf[];
-
+	char* sendBuf;
 public:
-
+	DebugClient(unsigned int port, unsigned int sendBufSize);
+	virtual ~DebugClient();
 	bool initClient(unsigned int port);
 	void sendRequest(functionRequest function, char* params);
 	int recEverything(void* buf, unsigned int size);
-	DebugClient(unsigned int port, unsigned int sendBufSize);
-	virtual ~DebugClient(){};
+
 };
