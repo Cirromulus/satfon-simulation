@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
 	while(true){
 		unsigned int address = rand() % mramSize;
 		unsigned char value = rand() % 0x100;
-		printf("%03u at %u\n", value, address);
+		printf("%02X at %u\n", value & 0xFF, address);
 		mram.setByte(address, value);
 	}
 }
