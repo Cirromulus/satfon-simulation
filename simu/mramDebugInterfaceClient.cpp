@@ -9,17 +9,24 @@
 #include "mramDebugInterfaceClient.hpp"
 
 #include <arpa/inet.h>
-
+#include <string.h>
 
 
 void MramDebugInterfaceClient::sendFlashRequest(functionRequest function, unsigned int address){
-	sendRequest(function, reinterpret_cast<char*>(&address));
+	char buf[sizeof(unsigned int)];
+	memcpy(buf, &address, sizeof(unsigned int));
+	sendRequest(function, buf);
 }
 
 bool MramDebugInterfaceClient::isConnected(){
 	sendFlashRequest(F_GETCONFIG, 0);
 	MramConfiguration localConf;
 	if(recEverything(&localConf, sizeof(MramConfiguration)) != sizeof(MramConfiguration)){
+		return false;
+	}
+	if(localConf.size > 0x1000000 ||
+			localConf.blockWidth > localConf.size ||
+			localConf.blockWidth > 0x10000){
 		return false;
 	}
 	if(localConf.blockWidth != config.blockWidth){

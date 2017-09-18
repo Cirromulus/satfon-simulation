@@ -16,7 +16,7 @@
 
 
 DebugServer::DebugServer(unsigned int pageWidth, unsigned int startPort, unsigned int requestSize) :
-	mPageWidth(pageWidth), mStartPort(startPort), mRequestSize(requestSize){
+	mPageWidth(pageWidth), mStartPort(startPort), mRequestSize(sizeof(functionRequest) + requestSize){
 	stop = false;
 	if(!createServer()){
 		fprintf(stderr, "DebugServer %s: Could not create Server!", typeid(this).name());
@@ -61,18 +61,17 @@ bool DebugServer::createServer(){
 }
 
 void DebugServer::serverListener(){
-
-	int bufsize = sizeof(enum functionRequest) + mRequestSize;
-	char* buf = new char[bufsize];
+	char* buf = new char[mRequestSize];
 
 	char* answerBuf = new char[mPageWidth * sizeof(AccessValues)];	//Has to fit the biggest type
 
 	sockaddr remAddr;
 	unsigned int remAddrSize = sizeof(remAddr);
 	while (!stop) {
-		int recvlen = recvfrom(serverSock, buf, bufsize, 0, &remAddr, &remAddrSize);
-		if (recvlen == bufsize) {
-			functionRequest function = static_cast<functionRequest> (buf[0]);
+		int recvlen = recvfrom(serverSock, buf, mRequestSize, 0, &remAddr, &remAddrSize);
+		if (recvlen > 0 && static_cast<unsigned>(recvlen) == mRequestSize) {
+			functionRequest function;
+			memcpy(&function, buf, sizeof(functionRequest));
 
 			int answerSize = handleRequest(answerBuf, function, &buf[sizeof(enum functionRequest)]);
 			if(sendto(serverSock, answerBuf, answerSize, 0, &remAddr, remAddrSize) < 0)
@@ -80,7 +79,7 @@ void DebugServer::serverListener(){
 
 		}else{
 			if(recvlen > 0)
-				fprintf(stderr, "DebugServer: Misaligned read from socket.\n(Was %d, should %d)\n", recvlen, bufsize);
+				fprintf(stderr, "DebugServer: Misaligned read from socket.\n(Was %d, should %d)\n", recvlen, mRequestSize);
 		}
 	}
 	delete[] buf;

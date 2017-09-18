@@ -13,7 +13,7 @@ endif
 FVIEWERDIR=./flashView/
 MVIEWERDIR=./mramView/
 
-all: mview fview
+all: mview fview example
 
 fview:
 	@scons $(MAKEJOBS) -C $(FVIEWERDIR)

@@ -19,9 +19,8 @@ MramViewer::~MramViewer()
 }
 
 void MramViewer::drawMainPage(QImage* mem){
-	blockWidth  = dbgIf->getBlockWidth();
 	for (unsigned int block = 0; block < heightInPixels; block++){
-		unsigned int address = activePage * heightInPixels + blockWidth * block;
+		unsigned int address = activePage * blockWidth * heightInPixels + blockWidth * block;
 		//printf("Block %u address %u-%u\n", block, address, address + blockWidth);
 		if(address + blockWidth > dbgIf->getSize()){
 			//Too far
@@ -58,7 +57,7 @@ void MramViewer::paintEvent(QPaintEvent *){
 	//Draw Header
 	char planeNumber[20];
 	sprintf(planeNumber, "Page: %02u/%02u", activePage + 1,
-			dbgIf->getSize() / blockWidth / heightInPixels + 1);
+			dbgIf->getSize() / blockWidth / heightInPixels);
 	char headerViewtype[50];
 	sprintf(headerViewtype, "Size: %u Byte", dbgIf->getSize());
 
@@ -116,17 +115,17 @@ void MramViewer::rescaleWindow(bool force){
 		//nothing changed
 		return;
 	}
+	if(w == 0){
+		printf("Something is wrong with the size values.\n"
+		"Got w: %d\n", w);
+		return;
+	}
 	blockWidth = w;
 	int h = headerHeight + heightInPixels;
 	w *= size_factor;
 	h *= size_factor;
-	if(w > 0 && h > 0){
-		setFixedSize(QSize(w,h));
-		resize(w,h);
-	}else{
-		printf("Something is wrong with the size values.\n"
-		"Got w: %d, got h: %d\n", w, h);
-	}
+	setFixedSize(QSize(w,h));
+	resize(w,h);
 }
 
 void MramViewer::keyPressEvent(QKeyEvent *e)
@@ -134,11 +133,12 @@ void MramViewer::keyPressEvent(QKeyEvent *e)
 	switch (e->key()){
 	case Qt::Key_Right:
 		activePage = (activePage + 1) >
-			(dbgIf->getSize() / blockWidth / heightInPixels) ?
-					activePage : activePage + 1;
+			(dbgIf->getSize() - 1) / blockWidth / heightInPixels ?
+					0 : activePage + 1;
 		break;
 	case Qt::Key_Left:
-		activePage = static_cast<long>(activePage) - 1 < 0 ? activePage : activePage - 1;
+		activePage = static_cast<long>(activePage) - 1 < 0 ?
+				(dbgIf->getSize() - 1) / blockWidth / heightInPixels : activePage - 1;
 		break;
 	case Qt::Key_H:
 		help_sign = !help_sign;

@@ -14,7 +14,7 @@
 #include <errno.h>
 
 DebugClient::DebugClient(unsigned int port, unsigned int sendBufSize) :
-	rcptSize(sizeof(rcpt)), mSendBufSize(sendBufSize){
+	rcptSize(sizeof(rcpt)), mSendBufSize(sizeof(functionRequest) + sendBufSize){
 	if(!initClient(port)){
 		printf("DebugClient: Could not bind to port %u\n", port);
 	}
@@ -52,9 +52,16 @@ bool DebugClient::initClient(unsigned int port){
 }
 
 void DebugClient::sendRequest(functionRequest function, char* params){
+	memset(sendBuf, 0, mSendBufSize);
 	sendBuf[0] = function;
-	memcpy(&sendBuf[sizeof(functionRequest)], params, mSendBufSize);
-	if (sendto(clientSock, sendBuf, mSendBufSize + sizeof(functionRequest), 0 ,
+	memcpy(&sendBuf[sizeof(functionRequest)], params, mSendBufSize - sizeof(functionRequest));
+	/*
+	for(unsigned i = 0; i < mSendBufSize; i++){
+		printf("%02X ", sendBuf[i] & 0xff);
+	}
+	printf("\n");
+	*/
+	if (sendto(clientSock, sendBuf, mSendBufSize, 0 ,
 			reinterpret_cast<struct sockaddr*> (&rcpt), rcptSize)<0){
 		fprintf(stderr, "could not send request.\n");
 	}
