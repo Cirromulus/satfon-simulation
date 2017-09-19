@@ -8,6 +8,7 @@
 #pragma once
 
 #include "debugServer.hpp"
+#include <simu/config.hpp>
 
 static constexpr unsigned int mramDebugServerStartPort = 3084;
 static constexpr unsigned int mramDebugServerBlockwidth = 512;
