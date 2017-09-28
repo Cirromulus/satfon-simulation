@@ -34,8 +34,12 @@ envGlobal.Append(CPPPATH=[
 envGlobal.SConscript([
     os.path.join(rootpath, 'simu/SConscript'),
     ],
-	exports='envGlobal'
+    exports='envGlobal'
 )
+
+envGlobal.Append(LIBS=[
+        'pthread',
+])
 
 
 program = envGlobal.Program('flashExample', "flashExample.cpp") 
