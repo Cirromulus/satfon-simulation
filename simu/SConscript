@@ -8,14 +8,11 @@ envGlobal.Append(CPPPATH=[os.path.abspath('..')])
 
 env = envGlobal.Clone()
 
-env.Append(LIBS=[
-	'pthread',
-])
-
 files  = env.Glob('*.cpp')
 
 library = env.StaticLibrary('simu', files)
 envGlobal.Append(LIBS=[
 	library,
+	'pthread',
 ])
 envGlobal.Install('$BUILDPATH/lib', library)
