@@ -11,6 +11,8 @@
 #include "../simu/flashCell.h"
 
 int main(int argc, char *argv[]){
+	(void) argc;
+	(void) argv;
 	Failparam fp = {100, 20, 0, 0};
 	FlashCell flash = FlashCell(fp);
 	bool ok = true;
@@ -24,7 +26,7 @@ int main(int argc, char *argv[]){
 	}
 	i = 1;
 	while(ok && i++){
-		Nandaddress pos = {0};
+		Nandaddress pos = {0, 0, 0};
 		pos.plane = rand() % flash.cellSize;	//A bit confusing names...
 		pos.block = rand() % flash.planeSize;
 		pos.page  = rand() % flash.blockSize;

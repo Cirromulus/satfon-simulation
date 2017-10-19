@@ -18,11 +18,15 @@ Mram::Mram(unsigned int size) :
 }
 Mram::~Mram(){
 	delete[] mData;
+	mData = nullptr;
 }
 
 int Mram::handleRequest(char* answerBuf, functionRequest function, char *params){
 	unsigned int address;
 	memcpy(&address, params, sizeof(unsigned int));
+	if(mData == nullptr){
+		return mramDebugServerBlockwidth;
+	}
 	if(address + mramDebugServerBlockwidth > mSize){
 		printf("Got invalid request address at %u (< %u)\n", address, mSize);
 		memset(answerBuf, 0, mramDebugServerBlockwidth);
