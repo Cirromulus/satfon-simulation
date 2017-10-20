@@ -63,4 +63,8 @@ public:
 	int getBlockSize();
 	int getPageSize();
 	int getPageDataSize();
+
+	std::ostream& serialize(std::ostream& stream);
+
+	void deserialize(std::istream& stream);
 };

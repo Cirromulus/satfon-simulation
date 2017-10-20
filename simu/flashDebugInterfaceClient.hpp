@@ -66,7 +66,6 @@ public:
 
 	DATA_TYPE* getLatchMask(unsigned int planeAddress,
 			unsigned int blockAddress, unsigned int pageAddress);
-
 };
 
 #endif /* SIMU_FLASHDEBUGINTERFACECLIENT_HPP_ */

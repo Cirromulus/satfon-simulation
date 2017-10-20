@@ -25,5 +25,4 @@ public:
 	bool initClient(unsigned int port);
 	void sendRequest(functionRequest function, char* params);
 	int recEverything(void* buf, unsigned int size);
-
 };

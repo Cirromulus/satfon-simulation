@@ -76,7 +76,7 @@ int DebugClient::recEverything(void* buf, unsigned int size){
 				size - receivedBytes, 0,
 				reinterpret_cast<struct sockaddr*> (&rcpt), &rcptSize)) < 0)
 		{
-			fprintf(stderr, "Error while receiving (Rec: %d, %s)\n", tmpReceivedBytes, strerror(errno));
+			//fprintf(stderr, "Error while receiving (Rec: %d, %s)\n", tmpReceivedBytes, strerror(errno));
 			return -1;
 		}
 		if(tmpReceivedBytes == 0){

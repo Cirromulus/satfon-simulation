@@ -12,7 +12,7 @@
 #include "mram.hpp"
 
 #include <vector>
-#include <stdio.h>
+#include <ostream>
 
 class MramDebugInterfaceClient : private DebugClient{
 	std::vector<unsigned char> dataBuf;
@@ -40,7 +40,6 @@ public:
 	unsigned int getSize();
 
 	unsigned char* getValue(unsigned int address);
-
 };
 
 #endif /* SIMU_FLASHDEBUGINTERFACECLIENT_HPP_ */

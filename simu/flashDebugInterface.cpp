@@ -176,3 +176,59 @@ int FlashDebugInterface::handleRequest(char* answerBuf, functionRequest function
 	}
 }
 
+std::ostream& FlashDebugInterface::serialize(std::ostream& stream)
+{
+	//TODO: Add failpoints
+	FlashConfiguration config = {cell->pageSize, cell->blockSize, cell->planeSize, cell->cellSize};
+	stream.write(reinterpret_cast<char*>(&config), sizeof(FlashConfiguration));
+	for(unsigned plane = 0; plane < cell->cellSize; plane++)
+	{
+		for(unsigned block = 0; block < cell->planeSize; block++)
+		{
+			for(unsigned page = 0; page < cell->blockSize; page++)
+			{
+				for(unsigned byte = 0; byte < cell->pageSize; byte++)
+				{
+					stream.write(reinterpret_cast<char*>(
+							&cell->planes[plane].
+										blocks[block].
+										pages[page].
+										bytes[byte].word)
+					             , 1);
+				}
+			}
+		}
+	}
+	return stream;
+}
+
+void FlashDebugInterface::deserialize(std::istream& stream)
+{
+	//TODO: Add failpoints
+	FlashConfiguration ownconfig = {cell->pageSize, cell->blockSize, cell->planeSize, cell->cellSize};;
+	FlashConfiguration config;
+	stream.read(reinterpret_cast<char*>(&config), sizeof(FlashConfiguration));
+	if(memcmp(&ownconfig, &config, sizeof(FlashConfiguration)) != 0)
+	{
+		printf("Serializing config differs to own!\n");
+		return;
+	}
+	for(unsigned plane = 0; plane < cell->cellSize; plane++)
+	{
+		for(unsigned block = 0; block < cell->planeSize; block++)
+		{
+			for(unsigned page = 0; page < cell->blockSize; page++)
+			{
+				for(unsigned byte = 0; byte < cell->pageSize; byte++)
+				{
+					stream.read(reinterpret_cast<char*>(
+							&cell->planes[plane].
+										blocks[block].
+										pages[page].
+										bytes[byte].word)
+					             , 1);
+				}
+			}
+		}
+	}
+}

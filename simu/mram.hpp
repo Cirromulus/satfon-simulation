@@ -29,4 +29,6 @@ public:
 	~Mram();
 	unsigned char getByte(unsigned int address);
 	void setByte(unsigned int address, unsigned char byte);
+
+	std::ostream& serialize(std::ostream& stream);
 };
