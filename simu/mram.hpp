@@ -31,4 +31,5 @@ public:
 	void setByte(unsigned int address, unsigned char byte);
 
 	std::ostream& serialize(std::ostream& stream);
+	void deserialize(std::istream& stream);
 };

@@ -8,6 +8,7 @@
 #include "mram.hpp"
 #include <stdio.h>
 #include <string.h>
+#include <fstream>
 
 Mram::Mram(unsigned int size) :
 		DebugServer(mramDebugServerBlockwidth, mramDebugServerStartPort, sizeof(unsigned int))
@@ -62,4 +63,20 @@ void Mram::setByte(unsigned int address, unsigned char byte){
 		return;
 	}
 	mData[address] = byte;
+}
+
+std::ostream& Mram::serialize(std::ostream& stream){
+	stream.write(reinterpret_cast<char*>(&config), sizeof(MramConfiguration));
+	stream.write(reinterpret_cast<char*>(mData), config.size);
+	return stream;
+}
+void Mram::deserialize(std::istream& stream){
+	MramConfiguration fileconf;
+	stream.read(reinterpret_cast<char*>(&fileconf), sizeof(MramConfiguration));
+	if(memcmp(&fileconf, &config, sizeof(MramConfiguration)) != 0)
+	{
+		printf("Serializing config differs to own!\n");
+		return;
+	}
+	stream.read(reinterpret_cast<char*>(mData), config.size);
 }

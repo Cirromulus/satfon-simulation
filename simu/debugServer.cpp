@@ -49,9 +49,9 @@ bool DebugServer::createServer(){
 		addr.sin_port = htons(mStartPort+i);
 
 		if (bind(serverSock, reinterpret_cast<sockaddr *>(&addr), sizeof(addr)) < 0) {
-			fprintf(stderr, "Bind failed with Port %d\n", mStartPort+i);
+			//fprintf(stderr, "Bind failed with Port %d\n", mStartPort+i);
 		}else{
-			//printf("Bind succeeded with Port %d\n", START_PORT+i);
+			printf("Bind succeeded with Port %d\n", mStartPort+i);
 			any = true;
 			break;
 		}
