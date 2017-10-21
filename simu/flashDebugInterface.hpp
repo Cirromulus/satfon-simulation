@@ -23,8 +23,6 @@ class FlashCell;
 
 class FlashDebugInterface : private DebugServer{
 	FlashCell* cell;
-	bool targetSet = false;
-
 	int handleRequest(char* answerBuf, functionRequest function, char *params) override;
 public:
 	FlashDebugInterface(FlashCell *mcell);
