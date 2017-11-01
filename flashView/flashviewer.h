@@ -9,7 +9,7 @@
 #include <random>
 #include <string>
 #include <ui_cellviewer.h>
-#include "../simu/flashCell.h"
+#include "../simu/flashCell.hpp"
 #include "../simu/flashDebugInterfaceClient.hpp"
 
 enum viewType { USAGE, VALUE, MIXED, _size};	//Auch die Strings in cellviewer.cpp ändern!

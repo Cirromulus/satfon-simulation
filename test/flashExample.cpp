@@ -8,7 +8,7 @@
 #include <stdlib.h>	//Random
 #include <time.h>   //time
 
-#include "../simu/flashCell.h"
+#include "../simu/flashCell.hpp"
 
 int main(int argc, char *argv[]){
 	(void) argc;

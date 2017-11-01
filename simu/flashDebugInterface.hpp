@@ -1,5 +1,5 @@
 /*
- * debugInterface.hpp
+ * FlashDebugInterface.hpp
  *
  *  Created on: 05.07.2016
  *      Author: urinator

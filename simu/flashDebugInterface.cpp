@@ -1,14 +1,13 @@
 /*
- * debugInterface.cpp
+ * FlashDebugInterface.cpp
  *
  *  Created on: 05.07.2016
  *      Author: urinator
  */
 
 #include "flashDebugInterface.hpp"
-#include "flashCell.h"
-
 #include "string.h"
+#include "flashCell.hpp"
 
 FlashDebugInterface::FlashDebugInterface(FlashCell *mcell) :
 	DebugServer(mcell->pageSize, flashDebugServerStartPort), cell(mcell){};
