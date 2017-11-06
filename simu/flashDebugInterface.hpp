@@ -56,6 +56,13 @@ public:
 
 	void setBadBlock(unsigned int planeAddress, unsigned int blockAddress);
 
+	unsigned long getNumberOfReadAccesses();
+	unsigned long getNumberOfWriteAccesses();
+	unsigned long getNumberOfEraseAccesses();
+	void resetGlobalUsage();
+
+	unsigned long getElapsedTimeUsec();
+
 	FlashCell* getCell();
 
 	int getCellSize();

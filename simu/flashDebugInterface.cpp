@@ -99,6 +99,32 @@ void FlashDebugInterface::setBadBlock(unsigned int planeAddress, unsigned int bl
 					bytes[PAGE_DATA + 5].word = 0x00;		//Siehe Dokumentation von Badblockmarkern
 }
 
+unsigned long FlashDebugInterface::getNumberOfReadAccesses()
+{
+	return cell->readAccesses;
+}
+
+unsigned long FlashDebugInterface::getNumberOfWriteAccesses()
+{
+	return cell->writeAccesses;
+}
+unsigned long FlashDebugInterface::getNumberOfEraseAccesses()
+{
+	return cell->eraseAccesses;
+}
+
+void FlashDebugInterface::resetGlobalUsage()
+{
+	cell->readAccesses = 0;
+	cell->writeAccesses = 0;
+	cell->eraseAccesses = 0;
+}
+
+unsigned long FlashDebugInterface::getElapsedTimeUsec()
+{
+	return cell->readAccesses * usecRead + cell->writeAccesses * usecWrite + cell->eraseAccesses * usecErase;
+}
+
 FlashCell* FlashDebugInterface::getCell(){
 	return cell;
 }

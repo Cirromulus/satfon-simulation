@@ -9,7 +9,7 @@
 
 
 #define DATA_TYPE unsigned char
-#define PAGE_DATA 512
+#define PAGE_DATA 1024
 #define PAGE_AUX (PAGE_DATA / 32)
 #define PAGE_SIZE (PAGE_DATA + PAGE_AUX)
 #define BLOCK_SIZE 64	//128
@@ -18,3 +18,8 @@
 #define CELL_SIZE 8	//4
 
 #define TID_FLIP_START_PERCENT 0.85
+
+static constexpr unsigned long usecRead  = 25;
+static constexpr unsigned long usecWrite = 200;
+static constexpr unsigned long usecErase = 1500;
+

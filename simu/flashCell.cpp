@@ -14,6 +14,7 @@ int FlashCell::readPage(unsigned int planeAddress, unsigned int blockAddress, un
 		fprintf(stderr, "READ to non-existent Page-address (<%d, was: %d)\n", CELL_SIZE, pageAddress);
 		return -1;
 	}
+	readAccesses++;
 	return planes[planeAddress].getBlock(blockAddress)->getPage(pageAddress)->readPage(buf);
 }
 
@@ -31,8 +32,8 @@ int FlashCell::writePage(unsigned int planeAddress, unsigned int blockAddress, u
 		fprintf(stderr, "WRITE to non-existent Page-address (<%d, was: %d)\n", CELL_SIZE, pageAddress);
 		return -1;
 	}
-	int ret = planes[planeAddress].getBlock(blockAddress)->getPage(pageAddress)->writePage(data);
-	return ret;
+	writeAccesses++;
+	return planes[planeAddress].getBlock(blockAddress)->getPage(pageAddress)->writePage(data);
 }
 
 int FlashCell::eraseBlock(unsigned int planeAddress, unsigned int blockAddress){
@@ -45,8 +46,8 @@ int FlashCell::eraseBlock(unsigned int planeAddress, unsigned int blockAddress){
 		fprintf(stderr, "ERASE in non-existent Block-address (<%d, was: %d)\n", CELL_SIZE, blockAddress);
 		return -1;
 	}
-	int ret = planes[planeAddress].getBlock(blockAddress)->eraseBlock();
-	return ret;
+	eraseAccesses++;
+	return planes[planeAddress].getBlock(blockAddress)->eraseBlock();
 }
 
 FlashDebugInterface* FlashCell::getDebugInterface(){

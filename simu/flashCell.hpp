@@ -189,7 +189,10 @@ class FlashCell{
 	friend class FlashDebugInterface;
 	std::vector<Plane> planes;
 	FlashDebugInterface* dbgIf;
-	//std::mutex write_mutex;
+	unsigned long readAccesses  = 0;
+	unsigned long writeAccesses = 0;
+	unsigned long eraseAccesses = 0;
+
 public:
 	FlashCell(Failparam f = {100000, 0, 0, 0}){
 		srand(time(0)+rand());
@@ -216,9 +219,11 @@ public:
 	static const unsigned int pageSize = PAGE_SIZE;
 	static const unsigned int pageDataSize = PAGE_DATA;
 
-	int readPage(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, DATA_TYPE *buf);
+	int readPage  (unsigned int planeAddress, unsigned int blockAddress,
+	               unsigned int pageAddress, DATA_TYPE *buf);
 
-	int writePage(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, DATA_TYPE data[PAGE_SIZE]);
+	int writePage (unsigned int planeAddress, unsigned int blockAddress,
+	               unsigned int pageAddress, DATA_TYPE data[PAGE_SIZE]);
 
 	int eraseBlock(unsigned int planeAddress, unsigned int blockAddress);
 
