@@ -2,7 +2,7 @@
  * mram.hpp
  *
  *  Created on: 10.09.2017
- *      Author: urinator
+ *      Author: Pascal Pieper
  */
 
 #pragma once

@@ -2,7 +2,7 @@
  * debugInterfaceClient.cpp
  *
  *  Created on: 05.07.2016
- *      Author: urinator
+ *      Author: Pascal Pieper
  */
 
 

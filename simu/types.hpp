@@ -2,7 +2,7 @@
  * types.hpp
  *
  *  Created on: 05.07.2016
- *      Author: urinator
+ *      Author: Pascal Pieper
  */
 
 #ifndef SIMU_TYPES_HPP_
