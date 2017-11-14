@@ -10,11 +10,11 @@
 #include "flashCell.hpp"
 
 FlashDebugInterface::FlashDebugInterface(FlashCell *mcell) :
-	DebugServer(mcell->pageSize, flashDebugServerStartPort), cell(mcell){};
+	DebugServer(simu::pageTotalSize, flashDebugServerStartPort), cell(mcell){};
 
 FlashDebugInterface::~FlashDebugInterface(){};
 
-DATA_TYPE FlashDebugInterface::getValue(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
+FlashByte FlashDebugInterface::getValue(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
 	return cell->planes[planeAddress].
 			blocks[blockAddress].
 			pages[pageAddress].
@@ -49,14 +49,14 @@ bool FlashDebugInterface::wasBitFlipped(unsigned int planeAddress, unsigned int 
 				bytes[wordAddress].wasFlipped;
 }
 
-DATA_TYPE FlashDebugInterface::getLatchMask(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
+FlashByte FlashDebugInterface::getLatchMask(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
 	return cell->planes[planeAddress].
 			blocks[blockAddress].
 			pages[pageAddress].
 			bytes[wordAddress].latch_mask;
 }
 
-void FlashDebugInterface::setLatchMask(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress, DATA_TYPE latch_mask){
+void FlashDebugInterface::setLatchMask(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress, FlashByte latch_mask){
 	cell->planes[planeAddress].
 	blocks[blockAddress].
 	pages[pageAddress].
@@ -96,7 +96,7 @@ void FlashDebugInterface::setBadBlock(unsigned int planeAddress, unsigned int bl
 	cell->planes[planeAddress].
 					blocks[blockAddress].
 					pages[0].
-					bytes[PAGE_DATA + 5].word = 0x00;		//Siehe Dokumentation von Badblockmarkern
+					bytes[pageDataSize + 5].word = 0x00;		//Siehe Dokumentation von Badblockmarkern
 }
 
 unsigned long FlashDebugInterface::getNumberOfReadAccesses()
@@ -130,19 +130,19 @@ FlashCell* FlashDebugInterface::getCell(){
 }
 
 int FlashDebugInterface::getCellSize(){
-	return cell->cellSize;
+	return simu::planesPerCell;
 }
 int FlashDebugInterface::getPlaneSize(){
-	return cell->planeSize;
+	return simu::blocksPerPlane;
 }
 int FlashDebugInterface::getBlockSize(){
-	return cell->blockSize;
+	return simu::pagesPerBlock;
 }
 int FlashDebugInterface::getPageSize(){
-	return cell->pageSize;
+	return simu::pageTotalSize;
 }
 int FlashDebugInterface::getPageDataSize(){
-	return cell->pageDataSize;
+	return simu::pageDataSize;
 }
 
 int FlashDebugInterface::handleRequest(char* answerBuf, functionRequest function, char *params) {
@@ -150,51 +150,51 @@ int FlashDebugInterface::handleRequest(char* answerBuf, functionRequest function
 	unsigned int block = params[sizeof(unsigned int)];
 	unsigned int page  = params[sizeof(unsigned int) * 2];
 
-	if(plane >= CELL_SIZE || block >= PLANE_SIZE || page >= BLOCK_SIZE){
-		memset(answerBuf, 0, PAGE_SIZE*sizeof(DATA_TYPE));
-		return PAGE_SIZE*sizeof(DATA_TYPE);
+	if(plane >= planesPerCell || block >= blocksPerPlane || page >= pagesPerBlock){
+		memset(answerBuf, 0, pageTotalSize*sizeof(FlashByte));
+		return pageTotalSize*sizeof(FlashByte);
 	}
-	FlashConfiguration config = {cell->pageSize, cell->blockSize, cell->planeSize, cell->cellSize};
+	FlashConfiguration config = {simu::pageTotalSize, simu::pagesPerBlock, simu::blocksPerPlane, simu::planesPerCell};
 	switch(function){
 	case F_GETCONFIG:
 		memcpy(answerBuf, &config, sizeof(FlashConfiguration));
 		return sizeof(FlashConfiguration);
 	case F_GETVALUE:
-		for(int i = 0; i < PAGE_SIZE; i++){
-			answerBuf[i*sizeof(DATA_TYPE)] = getValue(plane, block, page, i);
+		for(int i = 0; i < pageTotalSize; i++){
+			answerBuf[i*sizeof(FlashByte)] = getValue(plane, block, page, i);
 		}
-		return PAGE_SIZE*sizeof(DATA_TYPE);
+		return pageTotalSize*sizeof(FlashByte);
 	case F_GETACCESSVALUES:
-		for(int i = 0; i < PAGE_SIZE; i++){
+		for(int i = 0; i < pageTotalSize; i++){
 			AccessValues av = getAccessValues(plane, block, page, i);
 			for(unsigned int j = 0; j < sizeof(AccessValues); j++){
 				answerBuf[i*sizeof(AccessValues) + j] = reinterpret_cast<char*> (&av)[j];
 			}
 		}
-		return PAGE_SIZE*sizeof(AccessValues);
+		return pageTotalSize*sizeof(AccessValues);
 	case F_GETRADIATIONDOSE:
-		for(int i = 0; i < PAGE_SIZE; i++){
+		for(int i = 0; i < pageTotalSize; i++){
 			answerBuf[i*sizeof(unsigned int)] = getRadiationDose(plane, block, page, i);
 		}
-		return PAGE_SIZE*sizeof(unsigned int);
+		return pageTotalSize*sizeof(unsigned int);
 	case F_GETFAILPOINT:
-		for(int i = 0; i < PAGE_SIZE; i++){
+		for(int i = 0; i < pageTotalSize; i++){
 			Failpoint fp = getFailpoint(plane, block, page, i);
 			for(unsigned int j = 0; j < sizeof(Failpoint); j++){
 				answerBuf[i*sizeof(Failpoint) + j] = reinterpret_cast<char*> (&fp)[j];
 			}
 		}
-		return PAGE_SIZE*sizeof(Failpoint);
+		return pageTotalSize*sizeof(Failpoint);
 	case F_WASBITFLIPPED:
-		for(int i = 0; i < PAGE_SIZE; i++){
+		for(int i = 0; i < pageTotalSize; i++){
 			answerBuf[i*sizeof(bool)] = wasBitFlipped(plane, block, page, i);
 		}
-		return PAGE_SIZE*sizeof(bool);
+		return pageTotalSize*sizeof(bool);
 	case F_GETLATCHMASK:
-		for(int i = 0; i < PAGE_SIZE; i++){
-			answerBuf[i*sizeof(DATA_TYPE)] = getLatchMask(plane, block, page, i);
+		for(int i = 0; i < pageTotalSize; i++){
+			answerBuf[i*sizeof(FlashByte)] = getLatchMask(plane, block, page, i);
 		}
-		return PAGE_SIZE*sizeof(DATA_TYPE);
+		return pageTotalSize*sizeof(FlashByte);
 	default:
 		answerBuf[0] = 0xFF;
 		return 1;
@@ -204,15 +204,15 @@ int FlashDebugInterface::handleRequest(char* answerBuf, functionRequest function
 std::ostream& FlashDebugInterface::serialize(std::ostream& stream)
 {
 	//TODO: Add failpoints
-	FlashConfiguration config = {cell->pageSize, cell->blockSize, cell->planeSize, cell->cellSize};
+	FlashConfiguration config = {simu::pageTotalSize, simu::pagesPerBlock, simu::blocksPerPlane, simu::planesPerCell};
 	stream.write(reinterpret_cast<char*>(&config), sizeof(FlashConfiguration));
-	for(unsigned plane = 0; plane < cell->cellSize; plane++)
+	for(unsigned plane = 0; plane < simu::planesPerCell; plane++)
 	{
-		for(unsigned block = 0; block < cell->planeSize; block++)
+		for(unsigned block = 0; block < simu::blocksPerPlane; block++)
 		{
-			for(unsigned page = 0; page < cell->blockSize; page++)
+			for(unsigned page = 0; page < simu::pagesPerBlock; page++)
 			{
-				for(unsigned byte = 0; byte < cell->pageSize; byte++)
+				for(unsigned byte = 0; byte < simu::pageTotalSize; byte++)
 				{
 					stream.write(reinterpret_cast<char*>(
 							&cell->planes[plane].
@@ -230,7 +230,7 @@ std::ostream& FlashDebugInterface::serialize(std::ostream& stream)
 void FlashDebugInterface::deserialize(std::istream& stream)
 {
 	//TODO: Add failpoints
-	FlashConfiguration ownconfig = {cell->pageSize, cell->blockSize, cell->planeSize, cell->cellSize};;
+	FlashConfiguration ownconfig = {simu::pageTotalSize, simu::pagesPerBlock, simu::blocksPerPlane, simu::planesPerCell};;
 	FlashConfiguration config;
 	stream.read(reinterpret_cast<char*>(&config), sizeof(FlashConfiguration));
 	if(memcmp(&ownconfig, &config, sizeof(FlashConfiguration)) != 0)
@@ -238,13 +238,13 @@ void FlashDebugInterface::deserialize(std::istream& stream)
 		printf("Serializing config differs to own!\n");
 		return;
 	}
-	for(unsigned plane = 0; plane < cell->cellSize; plane++)
+	for(unsigned plane = 0; plane < simu::planesPerCell; plane++)
 	{
-		for(unsigned block = 0; block < cell->planeSize; block++)
+		for(unsigned block = 0; block < simu::blocksPerPlane; block++)
 		{
-			for(unsigned page = 0; page < cell->blockSize; page++)
+			for(unsigned page = 0; page < simu::pagesPerBlock; page++)
 			{
-				for(unsigned byte = 0; byte < cell->pageSize; byte++)
+				for(unsigned byte = 0; byte < simu::pageTotalSize; byte++)
 				{
 					stream.read(reinterpret_cast<char*>(
 							&cell->planes[plane].

@@ -13,13 +13,15 @@
 #include "debugClient.hpp"
 #include "flashDebugInterface.hpp"
 
+using namespace simu;
+
 class FlashDebugInterfaceClient : private DebugClient{
-	DATA_TYPE dataBuf[PAGE_SIZE];
-	AccessValues avBuf[PAGE_SIZE];
-	unsigned int radiationBuf[PAGE_SIZE];
-	Failpoint fpBuf[PAGE_SIZE];
-	bool bitFlippedBuf[PAGE_SIZE];
-	DATA_TYPE latchBuf[PAGE_SIZE];
+	FlashByte dataBuf[pageTotalSize];
+	AccessValues avBuf[pageTotalSize];
+	unsigned int radiationBuf[pageTotalSize];
+	Failpoint fpBuf[pageTotalSize];
+	bool bitFlippedBuf[pageTotalSize];
+	FlashByte latchBuf[pageTotalSize];
 	FlashConfiguration config;
 
 public:
@@ -49,7 +51,7 @@ public:
 
 	unsigned int getCellSize();
 
-	DATA_TYPE* getValue(unsigned int planeAddress, unsigned int blockAddress,
+	FlashByte* getValue(unsigned int planeAddress, unsigned int blockAddress,
 			unsigned int pageAddress);
 
 	AccessValues* getAccessValues(unsigned int planeAddress,
@@ -64,7 +66,7 @@ public:
 	bool* wasBitFlipped(unsigned int planeAddress, unsigned int blockAddress,
 			unsigned int pageAddress);
 
-	DATA_TYPE* getLatchMask(unsigned int planeAddress,
+	FlashByte* getLatchMask(unsigned int planeAddress,
 			unsigned int blockAddress, unsigned int pageAddress);
 };
 

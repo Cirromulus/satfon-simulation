@@ -1,25 +1,27 @@
 /*
- * types.hpp
+ * Config.hpp
  *
  *  Created on: 05.07.2016
  *      Author: Pascal Pieper
  */
 
 #pragma once
+#include <inttypes.h>
 
+namespace simu
+{
+typedef unsigned char FlashByte;
+static constexpr uint16_t pageDataSize  = 1024;
+static constexpr uint16_t pageAuxSize   = (pageDataSize / 32);
+static constexpr uint16_t pageTotalSize = (pageDataSize + pageAuxSize);
+static constexpr uint16_t pagesPerBlock = 64;
+static constexpr uint16_t blocksPerPlane= 8;
+//#define planesPerCell 1024
+static constexpr uint16_t planesPerCell = 8;
 
-#define DATA_TYPE unsigned char
-#define PAGE_DATA 1024
-#define PAGE_AUX (PAGE_DATA / 32)
-#define PAGE_SIZE (PAGE_DATA + PAGE_AUX)
-#define BLOCK_SIZE 64	//128
-#define PLANE_SIZE 8	//8
-//#define CELL_SIZE 1024
-#define CELL_SIZE 8	//4
-
-#define TID_FLIP_START_PERCENT 0.85
+static constexpr float tidFlipStartInPercent = 0.85;
 
 static constexpr unsigned long usecRead  = 25;
 static constexpr unsigned long usecWrite = 200;
 static constexpr unsigned long usecErase = 1500;
-
+};

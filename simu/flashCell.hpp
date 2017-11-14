@@ -2,39 +2,41 @@
 #define __FLASHCELL__
 
 #include <simu/config.hpp>
+#include "flashDebugInterface.hpp"
 
 #include <chrono>
 #include <random>
 #include <iostream>
 #include <vector>
 
-#include "flashDebugInterface.hpp"
+
+using namespace simu;
 
 class f_byte{
 	friend class FlashDebugInterface;
 	friend class FlashCell;
-	DATA_TYPE word = 0xFF, latch_mask = 0x00;
+	FlashByte word = 0xFF, latch_mask = 0x00;
 	AccessValues access = {0,0,0};
 	Failpoint failpoint = {0,0};
 	unsigned int radiation_dose = 0;
 	bool wasFlipped = false;
 
 	void flipBit(){
-		word ^= 1 << (rand() % (sizeof(DATA_TYPE) * 8));
+		word ^= 1 << (rand() % (sizeof(FlashByte) * 8));
 		wasFlipped = true;
 	}
 	void latch(){
-		latch_mask = 1 << (rand() % (sizeof(DATA_TYPE) * 8));
+		latch_mask = 1 << (rand() % (sizeof(FlashByte) * 8));
 	}
 public:
 	f_byte(Failpoint f) : failpoint(f){
 	}
-	int getWord(DATA_TYPE *wrd){
+	int getWord(FlashByte *wrd){
 		access.times_read++;
 		*wrd = word & (~latch_mask);
 		return failpoint.rad != 0 && radiation_dose > failpoint.rad ? -1 : 0;
 	}
-	int setWord(DATA_TYPE c){
+	int setWord(FlashByte c){
 		access.times_written++;
 		word &= c;
 		return failpoint.rad != 0 && radiation_dose > failpoint.rad ? -1 : 0;
@@ -56,8 +58,8 @@ public:
 		if(radiation_dose > failpoint.rad){
 			latch();
 		}
-		if(radiation_dose > failpoint.rad * TID_FLIP_START_PERCENT){
-			if(rand() % static_cast<int>(100* failpoint.rad * (1 - TID_FLIP_START_PERCENT)) < radiation_dose - failpoint.rad * TID_FLIP_START_PERCENT){
+		if(radiation_dose > failpoint.rad * tidFlipStartInPercent){
+			if(rand() % static_cast<int>(100* failpoint.rad * (1 - tidFlipStartInPercent)) < radiation_dose - failpoint.rad * tidFlipStartInPercent){
 				//Bei erreichen der TID -> geringe Wahrscheinlichkeit eines FLIPS
 				flipBit();
 			}
@@ -72,7 +74,7 @@ class Page{
 	Failparam fpa;
 public:
 	Page(Failparam mfpa) : fpa(mfpa){
-		bytes.reserve(PAGE_SIZE);
+		bytes.reserve(pageTotalSize);
 		
 		auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 		std::mt19937 generator(seed + rand());
@@ -81,7 +83,7 @@ public:
 		std::normal_distribution<> tid_distribution(fpa.mean_idose,fpa.idose_deviation);
 
 
-		for(int i = 0; i < PAGE_SIZE; i++){
+		for(int i = 0; i < pageTotalSize; i++){
 			Failpoint fpo = {fpa.mean_erases, fpa.mean_idose};
 			if(fpa.erase_deviation != 0){
 				fpo.erases = std::round(erase_distribution(generator));
@@ -94,23 +96,23 @@ public:
 	}
 
 
-	int readPage(DATA_TYPE* buf){
+	int readPage(FlashByte* buf){
 		bool allfailed = true;
-		for (unsigned int i = 0; i < PAGE_SIZE; i++){
+		for (unsigned int i = 0; i < pageTotalSize; i++){
 			allfailed &= bytes[i].getWord(&buf[i]) != 0;
 		}
 		return allfailed ? -1 : 0;
 	}
-	int writePage(DATA_TYPE data[PAGE_SIZE]){
+	int writePage(FlashByte data[pageTotalSize]){
 		bool allfailed = true;
-		for (unsigned int i = 0; i < PAGE_SIZE; i++){
+		for (unsigned int i = 0; i < pageTotalSize; i++){
 			allfailed &= bytes[i].setWord(data[i]);
 		}
 		return allfailed ? -1 : 0;
 	}
 	int resetPage(){
 		bool allfailed = true;
-		for (unsigned int i = 0; i < PAGE_SIZE; i++){
+		for (unsigned int i = 0; i < pageTotalSize; i++){
 			allfailed &= bytes[i].resetWord() != 0;
 		}
 		return allfailed ? -1 : 0;
@@ -128,15 +130,15 @@ class Block{
 	std::vector<Page> pages;
 public:
 	Block(Failparam f){
-		pages.reserve(BLOCK_SIZE);
-		for(int i = 0; i < BLOCK_SIZE; i++){
+		pages.reserve(pagesPerBlock);
+		for(int i = 0; i < pagesPerBlock; i++){
 			pages.push_back(Page(f));
 		}
 	}
 
 	Page *getPage(unsigned int address){
-		if (address >= BLOCK_SIZE){
-			fprintf(stderr, "ACCESS (READ/WRITE) from non-existent Block-address (<%d, was: %d)\n", BLOCK_SIZE, address);
+		if (address >= pagesPerBlock){
+			fprintf(stderr, "ACCESS (READ/WRITE) from non-existent Block-address (<%d, was: %d)\n", pagesPerBlock, address);
 			return NULL;
 		}
 		return &pages[address];
@@ -144,7 +146,7 @@ public:
 
 	int eraseBlock(){
 		bool allfailed = false;
-		for (unsigned int i = 0; i < BLOCK_SIZE; i++){
+		for (unsigned int i = 0; i < pagesPerBlock; i++){
 			allfailed |= pages[i].resetPage() < 0;
 		}
 		return allfailed ? -1 : 0;
@@ -163,16 +165,16 @@ class Plane{
 	std::vector<Block> blocks;
 public:
 	Plane(Failparam f){
-		blocks.reserve(PLANE_SIZE);
-		for(int i = 0; i < PLANE_SIZE; i++){
+		blocks.reserve(blocksPerPlane);
+		for(int i = 0; i < blocksPerPlane; i++){
 			blocks.push_back(Block(f));
 		}
 	}
 	//~plane(){} //Notwendig?
 
 	Block *getBlock(unsigned int address){
-		if (address >= PLANE_SIZE){
-			fprintf(stderr, "ACCESS (READ/WRITE) to non-existent Plane-address (<%d, was: %d)\n", PLANE_SIZE, address);
+		if (address >= blocksPerPlane){
+			fprintf(stderr, "ACCESS (READ/WRITE) to non-existent Plane-address (<%d, was: %d)\n", blocksPerPlane, address);
 			return NULL;
 		}
 		return &blocks[address];
@@ -196,8 +198,8 @@ class FlashCell{
 public:
 	FlashCell(Failparam f = {100000, 0, 0, 0}){
 		srand(time(0)+rand());
-		planes.reserve(CELL_SIZE);
-		for(int i = 0; i < CELL_SIZE; i++){
+		planes.reserve(planesPerCell);
+		for(int i = 0; i < planesPerCell; i++){
 			planes.push_back(Plane(f));
 		}
 		dbgIf = new FlashDebugInterface(this);
@@ -213,17 +215,11 @@ public:
 		}
 	}
 
-	static const unsigned int cellSize = CELL_SIZE;
-	static const unsigned int planeSize = PLANE_SIZE;
-	static const unsigned int blockSize = BLOCK_SIZE;
-	static const unsigned int pageSize = PAGE_SIZE;
-	static const unsigned int pageDataSize = PAGE_DATA;
-
 	int readPage  (unsigned int planeAddress, unsigned int blockAddress,
-	               unsigned int pageAddress, DATA_TYPE *buf);
+	               unsigned int pageAddress, FlashByte *buf);
 
 	int writePage (unsigned int planeAddress, unsigned int blockAddress,
-	               unsigned int pageAddress, DATA_TYPE data[PAGE_SIZE]);
+	               unsigned int pageAddress, FlashByte data[pageTotalSize]);
 
 	int eraseBlock(unsigned int planeAddress, unsigned int blockAddress);
 

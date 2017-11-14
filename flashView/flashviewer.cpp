@@ -55,7 +55,7 @@ void flashViewer::drawMainPage(QImage* mem){
 				}
 				case VALUE:
 				{
-					DATA_TYPE* value = dbgIf->getValue(active_plane, block, page);
+					FlashByte* value = dbgIf->getValue(active_plane, block, page);
 					if(value != NULL){
 						for(int byte = 0; byte < pageSize; byte++){
 							unsigned char r = ((value[byte] & 0b00000111) << 4);
@@ -77,10 +77,10 @@ void flashViewer::drawMainPage(QImage* mem){
 				}
 				case MIXED:
 				{
-					DATA_TYPE* value = dbgIf->getValue(active_plane, block, page);
+					FlashByte* value = dbgIf->getValue(active_plane, block, page);
 					AccessValues* av = dbgIf->getAccessValues(active_plane, block, page);
 					Failpoint* fv = dbgIf->getFailpoint(active_plane, block, page);
-					DATA_TYPE* latchmask = dbgIf->getLatchMask(active_plane, block, page);
+					FlashByte* latchmask = dbgIf->getLatchMask(active_plane, block, page);
 					if(value != NULL && av != NULL && fv != NULL && latchmask != NULL){
 						for(int byte = 0; byte < pageSize; byte++){
 							int b = (av[byte].times_reset / static_cast<float>(fv[byte].erases)) * 255;
