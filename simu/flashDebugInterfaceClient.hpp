@@ -1,9 +1,16 @@
 /*
- * debugInterfaceClient.hpp
+ * Copyright (c) 2017, German Aerospace Center (DLR)
  *
- *  Created on: 05.07.2016
- *      Author: Pascal Pieper
+ * This file is part of the development version of OUTPOST.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Authors:
+ * - Pascal Pieper 2017, German Aerospace Center (DLR)
  */
+// ----------------------------------------------------------------------------
 
 #ifndef SIMU_FLASHDEBUGINTERFACECLIENT_HPP_
 #define SIMU_FLASHDEBUGINTERFACECLIENT_HPP_
