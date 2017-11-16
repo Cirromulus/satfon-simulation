@@ -8,7 +8,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - Pascal Pieper 2017, German Aerospace Center (DLR)
+ * - 2017, Pascal Pieper (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
 
