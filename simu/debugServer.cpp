@@ -34,10 +34,18 @@ DebugServer::DebugServer(unsigned int pageWidth, unsigned int startPort, unsigne
 }
 
 DebugServer::~DebugServer(){
-	stop = true;
-	shutdown(serverSock, SHUT_RDWR);
-	//while(!serverListenerThread.joinable()){}
-	serverListenerThread.join();
+
+}
+
+void DebugServer::stopServer()
+{
+    if(!stop)
+    {
+        stop = true;
+        shutdown(serverSock, SHUT_RDWR);
+        //while(!serverListenerThread.joinable()){}
+        serverListenerThread.join();
+    }
 }
 
 bool DebugServer::createServer(){

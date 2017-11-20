@@ -19,12 +19,12 @@
 namespace simu
 {
 typedef unsigned char FlashByte;
-static constexpr uint16_t pageDataSize  = 1024;
+static constexpr uint16_t pageDataSize  = 512;
 static constexpr uint16_t pageAuxSize   = (pageDataSize / 32);
 static constexpr uint16_t pageTotalSize = (pageDataSize + pageAuxSize);
 static constexpr uint16_t pagesPerBlock = 64;
 static constexpr uint16_t blocksPerPlane= 8;
-//#define planesPerCell 1024
+
 static constexpr uint16_t planesPerCell = 8;
 
 static constexpr float tidFlipStartInPercent = 0.85;

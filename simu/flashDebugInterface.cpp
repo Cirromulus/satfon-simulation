@@ -20,7 +20,10 @@
 FlashDebugInterface::FlashDebugInterface(FlashCell *mcell) :
 	DebugServer(simu::pageTotalSize, flashDebugServerStartPort), cell(mcell){};
 
-FlashDebugInterface::~FlashDebugInterface(){};
+FlashDebugInterface::~FlashDebugInterface()
+{
+    stopServer();
+};
 
 FlashByte FlashDebugInterface::getValue(unsigned int planeAddress, unsigned int blockAddress, unsigned int pageAddress, unsigned int wordAddress){
 	return cell->planes[planeAddress].

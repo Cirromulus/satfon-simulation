@@ -37,12 +37,14 @@ class DebugServer{
 	unsigned int mPageWidth;
 	unsigned int mStartPort;
 	unsigned int mRequestSize;
-	std::atomic<bool> stop;
 	std::thread serverListenerThread;
+	std::atomic<bool> stop;
 
 	bool createServer();
 	void serverListener();
 	virtual int handleRequest(char* answerBuf, functionRequest function, char *params) = 0;
+protected:
+	void stopServer();
 public:
 	DebugServer(unsigned int pageWidth = 528,
 				unsigned int startPort = 2084,

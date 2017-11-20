@@ -26,6 +26,7 @@ Mram::Mram(unsigned int size) :
 	memset(mData, 0, size);
 }
 Mram::~Mram(){
+    stopServer();
 	delete[] mData;
 	mData = nullptr;
 }
