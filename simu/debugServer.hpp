@@ -32,22 +32,23 @@ enum functionRequest{
 
 static constexpr unsigned int maxInstancesListening = 5;
 
-class DebugServer{
-	int serverSock = 0;
-	unsigned int mPageWidth;
-	unsigned int mStartPort;
-	unsigned int mRequestSize;
-	std::thread serverListenerThread;
-	std::atomic<bool> stop;
+class DebugServer
+{
+    int serverSock = 0;
+    unsigned int mPageWidth;
+    unsigned int mStartPort;
+    unsigned int mRequestSize;
+    std::thread mServerListenerThread;
+    std::atomic<bool> mStop;
 
-	bool createServer();
-	void serverListener();
-	virtual int handleRequest(char* answerBuf, functionRequest function, char *params) = 0;
+    bool createServer();
+    void serverListener();
+    virtual int handleRequest(char* answerBuf, functionRequest function, char *params) = 0;
 protected:
 	void stopServer();
 public:
-	DebugServer(unsigned int pageWidth = 528,
-				unsigned int startPort = 2084,
-				unsigned int requestSize = sizeof(unsigned int) * 3);
-	virtual ~DebugServer();
+    DebugServer(unsigned int pageWidth = 528,
+                unsigned int startPort = 2084,
+                unsigned int requestSize = sizeof(unsigned int) * 3);
+    virtual ~DebugServer();
 };

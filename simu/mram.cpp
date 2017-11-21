@@ -19,44 +19,48 @@
 #include <fstream>
 
 Mram::Mram(unsigned int size) :
-		DebugServer(mramDebugServerBlockwidth, mramDebugServerStartPort, sizeof(unsigned int))
-		, mSize(size){
-	mData = new unsigned char[size];
-	config = {mramDebugServerBlockwidth, size};
-	memset(mData, 0, size);
+            DebugServer(mramDebugServerBlockwidth, mramDebugServerStartPort,
+            sizeof(unsigned int)), mSize(size)
+{
+    mData = new unsigned char[size];
+    mConfig = {mramDebugServerBlockwidth, size};
+    memset(mData, 0, size);
 }
-Mram::~Mram(){
+Mram::~Mram()
+{
     stopServer();
-	delete[] mData;
-	mData = nullptr;
+    delete[] mData;
+    mData = nullptr;
 }
 
-int Mram::handleRequest(char* answerBuf, functionRequest function, char *params){
-	unsigned int address;
-	memcpy(&address, params, sizeof(unsigned int));
-	if(mData == nullptr){
-		return mramDebugServerBlockwidth;
-	}
-	if(address + mramDebugServerBlockwidth > mSize){
-		printf("Got invalid request address at %u (< %u)\n", address, mSize);
-		memset(answerBuf, 0, mramDebugServerBlockwidth);
-		return mramDebugServerBlockwidth;
-	}
-	switch(function){
-	case F_GETCONFIG:
-		memcpy(answerBuf, &config, sizeof(MramConfiguration));
-		return sizeof(MramConfiguration);
+int Mram::handleRequest(char* answerBuf, functionRequest function, char *params)
+{
+    unsigned int address;
+    memcpy(&address, params, sizeof(unsigned int));
+    if(mData == nullptr)
+    {
+        return mramDebugServerBlockwidth;
+    }
+    if(address + mramDebugServerBlockwidth > mSize){
+        printf("Got invalid request address at %u (< %u)\n", address, mSize);
+        memset(answerBuf, 0, mramDebugServerBlockwidth);
+        return mramDebugServerBlockwidth;
+    }
+    switch(function){
+    case F_GETCONFIG:
+        memcpy(answerBuf, &mConfig, sizeof(MramConfiguration));
+        return sizeof(MramConfiguration);
 
-	case F_GETVALUE:
-		//printf("Got request from %u to %u\n",
-		//		address, address + mramDebugServerBlockwidth);
-		memcpy(answerBuf, &mData[address], mramDebugServerBlockwidth);
-		return mramDebugServerBlockwidth;
-	default:
-		break;
-	}
-	memset(answerBuf, 0, mramDebugServerBlockwidth);
-	return mramDebugServerBlockwidth;
+    case F_GETVALUE:
+        //printf("Got request from %u to %u\n",
+        //		address, address + mramDebugServerBlockwidth);
+        memcpy(answerBuf, &mData[address], mramDebugServerBlockwidth);
+        return mramDebugServerBlockwidth;
+    default:
+        break;
+    }
+    memset(answerBuf, 0, mramDebugServerBlockwidth);
+    return mramDebugServerBlockwidth;
 }
 
 unsigned char Mram::getByte(unsigned int address){
@@ -75,17 +79,17 @@ void Mram::setByte(unsigned int address, unsigned char byte){
 }
 
 std::ostream& Mram::serialize(std::ostream& stream){
-	stream.write(reinterpret_cast<char*>(&config), sizeof(MramConfiguration));
-	stream.write(reinterpret_cast<char*>(mData), config.size);
+	stream.write(reinterpret_cast<char*>(&mConfig), sizeof(MramConfiguration));
+	stream.write(reinterpret_cast<char*>(mData), mConfig.size);
 	return stream;
 }
 void Mram::deserialize(std::istream& stream){
 	MramConfiguration fileconf;
 	stream.read(reinterpret_cast<char*>(&fileconf), sizeof(MramConfiguration));
-	if(memcmp(&fileconf, &config, sizeof(MramConfiguration)) != 0)
+	if(memcmp(&fileconf, &mConfig, sizeof(MramConfiguration)) != 0)
 	{
 		printf("Serializing config differs to own!\n");
 		return;
 	}
-	stream.read(reinterpret_cast<char*>(mData), config.size);
+	stream.read(reinterpret_cast<char*>(mData), mConfig.size);
 }

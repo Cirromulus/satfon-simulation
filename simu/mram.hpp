@@ -29,7 +29,7 @@ struct MramConfiguration{
 class Mram : private DebugServer{
 	unsigned int mSize;
 	unsigned char *mData;
-	MramConfiguration config;
+	MramConfiguration mConfig;
 
 	int handleRequest(char* answerBuf, functionRequest function, char *params) override;
 public:

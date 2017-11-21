@@ -25,11 +25,11 @@
 
 DebugServer::DebugServer(unsigned int pageWidth, unsigned int startPort, unsigned int requestSize) :
 	mPageWidth(pageWidth), mStartPort(startPort), mRequestSize(sizeof(functionRequest) + requestSize){
-	stop = false;
+	mStop = false;
 	if(!createServer()){
 		fprintf(stderr, "DebugServer %s: Could not create Server!", typeid(this).name());
 	}else{
-		serverListenerThread = std::thread(&DebugServer::serverListener, this);
+		mServerListenerThread = std::thread(&DebugServer::serverListener, this);
 	}
 }
 
@@ -39,12 +39,11 @@ DebugServer::~DebugServer(){
 
 void DebugServer::stopServer()
 {
-    if(!stop)
+    if(!mStop.exchange(true))
     {
-        stop = true;
         shutdown(serverSock, SHUT_RDWR);
         //while(!serverListenerThread.joinable()){}
-        serverListenerThread.join();
+        mServerListenerThread.join();
     }
 }
 
@@ -83,7 +82,7 @@ void DebugServer::serverListener(){
 
 	sockaddr remAddr;
 	unsigned int remAddrSize = sizeof(remAddr);
-	while (!stop) {
+	while (!mStop) {
 		int recvlen = recvfrom(serverSock, buf, mRequestSize, 0, &remAddr, &remAddrSize);
 		if (recvlen > 0 && static_cast<unsigned>(recvlen) == mRequestSize) {
 			functionRequest function;
