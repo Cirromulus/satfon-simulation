@@ -23,22 +23,25 @@
 using namespace simu;
 
 class FlashDebugInterfaceClient : private DebugClient{
-	FlashByte dataBuf[pageTotalSize];
-	AccessValues avBuf[pageTotalSize];
-	unsigned int radiationBuf[pageTotalSize];
-	Failpoint fpBuf[pageTotalSize];
-	bool bitFlippedBuf[pageTotalSize];
-	FlashByte latchBuf[pageTotalSize];
-	FlashConfiguration config;
+	FlashByte *dataBuf;
+	AccessValues *avBuf;
+	unsigned int *radiationBuf;
+	Failpoint *fpBuf;
+	bool *bitFlippedBuf;
+	FlashByte *latchBuf;
+	FlashConfiguration mConfig;
 
 public:
 	FlashDebugInterfaceClient(int number) :
-			DebugClient(flashDebugServerStartPort + number, 3 * sizeof(unsigned int)){
+			DebugClient(flashDebugServerStartPort + number, 3 * sizeof(unsigned int)),
+			dataBuf(nullptr), avBuf(nullptr), radiationBuf(nullptr), fpBuf(nullptr),
+			bitFlippedBuf(nullptr), latchBuf(nullptr){
 		//default values
-		config.pageSize = 528;
-		config.blockSize = 64;
-		config.planeSize = 4;
-		config.cellSize = 4;
+		mConfig.pageSize = 528;
+		mConfig.blockSize = 64;
+		mConfig.planeSize = 4;
+		mConfig.cellSize = 4;
+		resizeBuffers();
 	}
 
 	FlashDebugInterfaceClient() :
@@ -75,6 +78,10 @@ public:
 
 	FlashByte* getLatchMask(unsigned int planeAddress,
 			unsigned int blockAddress, unsigned int pageAddress);
+private:
+
+	void
+	resizeBuffers();
 };
 
 #endif /* SIMU_FLASHDEBUGINTERFACECLIENT_HPP_ */

@@ -23,6 +23,17 @@ struct FlashConfiguration{
 	unsigned int blockSize;
 	unsigned int planeSize;
 	unsigned int cellSize;
+
+    inline bool operator==(const FlashConfiguration& other) const
+    {
+        return pageSize == other.pageSize && blockSize == other.blockSize &&
+                planeSize == other.planeSize && cellSize == other.cellSize;
+    }
+
+    inline bool operator!=(const FlashConfiguration& other) const
+    {
+        return !(*this == other);
+    }
 };
 
 static constexpr unsigned int flashDebugServerStartPort = 2084;
