@@ -8,7 +8,7 @@
 #include <random>
 #include <iostream>
 #include <vector>
-
+#include <functional>
 
 using namespace simu;
 
@@ -194,9 +194,11 @@ class FlashCell{
 	unsigned long readAccesses  = 0;
 	unsigned long writeAccesses = 0;
 	unsigned long eraseAccesses = 0;
+	std::function<void()> notifyChange = nullptr;
 
 public:
-	FlashCell(Failparam f = {100000, 0, 0, 0}){
+	FlashCell(Failparam f = {100000, 0, 0, 0})
+    {
 		srand(time(0)+rand());
 		planes.reserve(planesPerCell);
 		for(int i = 0; i < planesPerCell; i++){
@@ -205,12 +207,21 @@ public:
 		dbgIf = new FlashDebugInterface(this);
 	}
 
-	~FlashCell(){
+	~FlashCell()
+	{
 		delete dbgIf;
 	}
 
-	void increaseTID(unsigned int rad){
-		for(unsigned int i = 0; i < planes.size(); i++){
+	inline void
+	registerOnchangeFunction(std::function<void()> fun)
+	{   //Puttin' the fun in function
+	    notifyChange = fun;
+	}
+
+	void increaseTID(unsigned int rad)
+	{
+		for(unsigned int i = 0; i < planes.size(); i++)
+		{
 			planes[i].increaseTID(rad);
 		}
 	}

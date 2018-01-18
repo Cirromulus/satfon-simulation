@@ -17,6 +17,7 @@
 
 #include "debugServer.hpp"
 #include <simu/config.hpp>
+#include <functional>
 
 static constexpr unsigned int mramDebugServerStartPort = 3084;
 static constexpr unsigned int mramDebugServerBlockwidth = 512;
@@ -30,14 +31,22 @@ class Mram : private DebugServer{
 	unsigned int mSize;
 	unsigned char *mData;
 	MramConfiguration mConfig;
+	std::function<void()> notifyChange = nullptr;
 
 	int handleRequest(char* answerBuf, functionRequest function, char *params) override;
 public:
 	Mram(unsigned int size);
 	~Mram();
-	unsigned char getByte(unsigned int address);
-	void setByte(unsigned int address, unsigned char byte);
+    void
+    registerOnchangeFunction(std::function<void()> fun);
 
-	std::ostream& serialize(std::ostream& stream);
-	void deserialize(std::istream& stream);
+	unsigned char
+	getByte(unsigned int address);
+	void
+	setByte(unsigned int address, unsigned char byte);
+
+	std::ostream&
+	serialize(std::ostream& stream);
+	void
+	deserialize(std::istream& stream);
 };

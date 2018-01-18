@@ -63,27 +63,44 @@ int Mram::handleRequest(char* answerBuf, functionRequest function, char *params)
     return mramDebugServerBlockwidth;
 }
 
-unsigned char Mram::getByte(unsigned int address){
+void
+Mram::registerOnchangeFunction(std::function<void()> fun)
+{   //Puttin' the fun in function
+    notifyChange = fun;
+}
+
+unsigned char
+Mram::getByte(unsigned int address)
+{
 	if(address > mSize){
 		printf("MRAM read access out of bounds (%u of %u)\n", address, mSize);
 		return 0;
 	}
 	return mData[address];
 }
-void Mram::setByte(unsigned int address, unsigned char byte){
+void
+Mram::setByte(unsigned int address, unsigned char byte)
+{
 	if(address > mSize){
 		printf("MRAM write access out of bounds (%u of %u)\n", address, mSize);
 		return;
 	}
 	mData[address] = byte;
+	if(notifyChange != nullptr)
+	{
+	    notifyChange();
+	}
 }
 
-std::ostream& Mram::serialize(std::ostream& stream){
+std::ostream&
+Mram::serialize(std::ostream& stream)
+{
 	stream.write(reinterpret_cast<char*>(&mConfig), sizeof(MramConfiguration));
 	stream.write(reinterpret_cast<char*>(mData), mConfig.size);
 	return stream;
 }
-void Mram::deserialize(std::istream& stream){
+void
+Mram::deserialize(std::istream& stream){
 	MramConfiguration fileconf;
 	stream.read(reinterpret_cast<char*>(&fileconf), sizeof(MramConfiguration));
 	if(memcmp(&fileconf, &mConfig, sizeof(MramConfiguration)) != 0)

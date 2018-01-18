@@ -33,11 +33,15 @@ int FlashCell::writePage(unsigned int planeAddress, unsigned int blockAddress, u
 		return -1;
 	}
 	writeAccesses++;
-	return planes[planeAddress].getBlock(blockAddress)->getPage(pageAddress)->writePage(data);
+	int ret = planes[planeAddress].getBlock(blockAddress)->getPage(pageAddress)->writePage(data);
+	if(notifyChange != nullptr)
+	{
+	    notifyChange();
+	}
+	return ret;
 }
 
 int FlashCell::eraseBlock(unsigned int planeAddress, unsigned int blockAddress){
-	//mutex.lock();
 	if (planeAddress >= planesPerCell){
 		fprintf(stderr, "ERASE in non-existent Cell-address (<%d, was: %d)\n", planesPerCell, planeAddress);
 		return -1;
@@ -47,7 +51,13 @@ int FlashCell::eraseBlock(unsigned int planeAddress, unsigned int blockAddress){
 		return -1;
 	}
 	eraseAccesses++;
-	return planes[planeAddress].getBlock(blockAddress)->eraseBlock();
+	//Maybe this one is not necessary
+	int ret = planes[planeAddress].getBlock(blockAddress)->eraseBlock();
+    if(notifyChange != nullptr)
+    {
+        notifyChange();
+    }
+    return ret;
 }
 
 FlashDebugInterface* FlashCell::getDebugInterface(){

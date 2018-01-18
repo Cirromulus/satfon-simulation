@@ -1,5 +1,5 @@
 *.sconsign.dblite
-moc_flashviewer.cc
+moc_*.cc
 *.pyc
 build/
 .cproject

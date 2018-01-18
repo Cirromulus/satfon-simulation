@@ -22,7 +22,7 @@
 
 using namespace std;
 
-int main(int argc, char *argv[]){
+int main(int, char *[]){
 	unsigned int mramSize = 4096 * 512;
 	Mram mram(mramSize);
 	cout << "Inited MRAM." << endl;
