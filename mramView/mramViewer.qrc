@@ -1,4 +1,4 @@
 <RCC>
-    <qresource prefix="cellViewer">
+    <qresource prefix="mramViewer">
     </qresource>
 </RCC>
