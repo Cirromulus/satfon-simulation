@@ -111,8 +111,9 @@ void flashViewer::paintEvent(QPaintEvent *){
 	painter.scale(size_factor, size_factor);
 
 	//Draw Header
-	char planeNumber[20];
-	sprintf(planeNumber, "Plane: %d", active_plane);
+	char planeNumber[50];
+	sprintf(planeNumber, "Plane %4d, Blocks %3d-%3d", active_plane,
+	        active_plane * dbgIf->getPlaneSize(), (active_plane+1) * dbgIf->getPlaneSize() - 1);
 	char headerViewtype[50];
 	sprintf(headerViewtype, "Display type: %s", viewTypeString[view]);
 
@@ -122,9 +123,12 @@ void flashViewer::paintEvent(QPaintEvent *){
 	painter.setPen(Qt::black);
 	painter.drawText(QRect(headerPadding, headerPadding/2, MIN_WIDTH - headerPadding, headerHeight - headerPadding),
 			Qt::AlignVCenter | Qt::AlignLeft, headerViewtype);
-	painter.drawText(QRect(MIN_WIDTH/2 + headerPadding, headerPadding/2,
-			MIN_WIDTH/2 - 2*headerPadding, headerHeight - headerPadding),
-			Qt::AlignVCenter | Qt::AlignRight, planeNumber);
+    painter.drawText(QRect(MIN_WIDTH/2 + headerPadding, headerPadding/2,
+            MIN_WIDTH/2 - 2*headerPadding, headerHeight - headerPadding),
+            Qt::AlignVCenter | Qt::AlignRight, planeNumber);
+    painter.drawText(QRect(MIN_WIDTH/2 + headerPadding, headerPadding/2,
+            MIN_WIDTH/2 - 2*headerPadding, headerHeight - headerPadding),
+            Qt::AlignVCenter | Qt::AlignRight, planeNumber);
 
 	
 	//QPainter mempaint(&memory);

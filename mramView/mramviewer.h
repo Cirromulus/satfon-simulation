@@ -1,5 +1,4 @@
-#ifndef CELLVIEWER_H
-#define CELLVIEWER_H
+#pragma once
 
 #define MIN_HEIGHT (590/2)
 #define MIN_WIDTH (1056/2)
@@ -8,7 +7,7 @@
 #include <QtWidgets>
 #include <random>
 #include <string>
-#include <ui_cellviewer.h>
+#include <ui_mramviewer.h>
 #include "../simu/mramDebugInterfaceClient.hpp"
 
 class MramViewer : public QWidget
@@ -23,7 +22,7 @@ public:
 	void keyPressEvent(QKeyEvent *e);
 	void drawMainPage(QImage* mem);
 private:
-	Ui::cellViewerClass ui;
+	Ui::mramViewerClass ui;
 	MramDebugInterfaceClient *dbgIf;
 	unsigned int activePage = 0;
 	bool help_sign = false;
@@ -41,5 +40,3 @@ Linke Pfeiltaste - Plane herunterschalten\n\
 " };
 	void rescaleWindow(bool force = false);
 };
-
-#endif // CELLVIEWER_H
