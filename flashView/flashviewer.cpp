@@ -165,7 +165,10 @@ void flashViewer::paintEvent(QPaintEvent *){
 
 	painter.end();
 
-	update();
+	if(dbgIf->isConnected())
+	{
+	    update();
+	}
 }
 
 void flashViewer::rescaleWindow(){

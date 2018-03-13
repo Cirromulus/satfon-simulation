@@ -23,8 +23,6 @@ void MramViewer::drawMainPage(QImage* mem){
 		unsigned int address = activePage * blockWidth * heightInPixels + blockWidth * block;
 		//printf("Block %u address %u-%u\n", block, address, address + blockWidth);
 		if(address + blockWidth > dbgIf->getSize()){
-			//Too far
-			printf("Address %u-%u is too far\n", address, address + blockWidth);
 			return;
 		}
 		unsigned char* value = dbgIf->getValue(address);
@@ -106,7 +104,10 @@ void MramViewer::paintEvent(QPaintEvent *){
 
 	painter.end();
 
-	update();
+	if(dbgIf->isConnected())
+	{
+	    update();
+	}
 }
 
 void MramViewer::rescaleWindow(bool force){
