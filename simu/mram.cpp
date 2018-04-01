@@ -72,6 +72,7 @@ Mram::registerOnchangeFunction(std::function<void()> fun)
 unsigned char
 Mram::getByte(unsigned int address)
 {
+    readAccesses++;
 	if(address > mSize){
 		printf("MRAM read access out of bounds (%u of %u)\n", address, mSize);
 		return 0;
@@ -81,6 +82,7 @@ Mram::getByte(unsigned int address)
 void
 Mram::setByte(unsigned int address, unsigned char byte)
 {
+    writeAccesses++;
 	if(address > mSize){
 		printf("MRAM write access out of bounds (%u of %u)\n", address, mSize);
 		return;
@@ -90,6 +92,22 @@ Mram::setByte(unsigned int address, unsigned char byte)
 	{
 	    notifyChange();
 	}
+}
+
+unsigned long
+Mram::getNumberOfReadAccesses()
+{
+    return readAccesses;
+}
+unsigned long
+Mram::getNumberOfWriteAccesses()
+{
+    return writeAccesses;
+}
+unsigned long
+Mram::getElapsedTimeUsec()
+{
+    return (readAccesses + writeAccesses) / 1000;
 }
 
 std::ostream&

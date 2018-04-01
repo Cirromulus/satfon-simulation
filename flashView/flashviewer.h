@@ -30,6 +30,7 @@ private:
 	Ui::cellViewerClass ui;
 	FlashDebugInterfaceClient *dbgIf;
 	viewType view = VALUE;
+	QTimer *timer;
 	unsigned int active_plane = 0;
 	bool help_sign = false;
 	double size_factor = 1;

@@ -11,11 +11,13 @@ MramViewer::MramViewer(MramDebugInterfaceClient* mdbgIf, QWidget *mparent)
 	resize(dbgIf->getBlockWidth() * size_factor,
 			(headerHeight + heightInPixels) * size_factor);
 	setFixedSize(size());
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
 }
 
 MramViewer::~MramViewer()
 {
-
+    delete timer;
 }
 
 void MramViewer::drawMainPage(QImage* mem){

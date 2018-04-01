@@ -133,7 +133,7 @@ void FlashDebugInterface::resetGlobalUsage()
 
 unsigned long FlashDebugInterface::getElapsedTimeUsec()
 {
-	return cell->readAccesses * usecRead + cell->writeAccesses * usecWrite + cell->eraseAccesses * usecErase;
+	return cell->readAccesses * FlashReadUsec + cell->writeAccesses * FlashWriteUsec + cell->eraseAccesses * FlashEraseUsec;
 }
 
 FlashCell* FlashDebugInterface::getCell(){

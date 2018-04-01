@@ -24,6 +24,7 @@ public:
 private:
 	Ui::mramViewerClass ui;
 	MramDebugInterfaceClient *dbgIf;
+	QTimer *timer;
 	unsigned int activePage = 0;
 	bool help_sign = false;
 	double size_factor = 1;

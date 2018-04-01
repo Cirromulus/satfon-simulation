@@ -15,11 +15,13 @@ flashViewer::flashViewer(FlashDebugInterfaceClient* mdbgIf, QWidget *mparent)
 	ui.setupUi(this);
 	resize(dbgIf->getPageSize() * size_factor, (headerHeight + (dbgIf->getBlockSize() + 1)*dbgIf->getPlaneSize()) * size_factor);
 	setFixedSize(size());
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
 }
 
 flashViewer::~flashViewer()
 {
-
+    delete timer;
 }
 
 void flashViewer::drawMainPage(QImage* mem){
@@ -168,6 +170,9 @@ void flashViewer::paintEvent(QPaintEvent *){
 	if(dbgIf->isConnected())
 	{
 	    update();
+	}else
+	{
+	    timer->start(250);
 	}
 }
 

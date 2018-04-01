@@ -32,6 +32,8 @@ class Mram : private DebugServer{
 	unsigned char *mData;
 	MramConfiguration mConfig;
 	std::function<void()> notifyChange = nullptr;
+    unsigned long readAccesses  = 0;
+    unsigned long writeAccesses = 0;
 
 	int handleRequest(char* answerBuf, functionRequest function, char *params) override;
 public:
@@ -45,6 +47,13 @@ public:
 	void
 	setByte(unsigned int address, unsigned char byte);
 
+
+	unsigned long
+	getNumberOfReadAccesses();
+	unsigned long
+	getNumberOfWriteAccesses();
+	unsigned long
+	getElapsedTimeUsec();
 	std::ostream&
 	serialize(std::ostream& stream);
 	void
