@@ -18,11 +18,11 @@
 #include <string.h>
 #include <fstream>
 
-Mram::Mram(unsigned int size) :
+Mram::Mram(uint32_t size) :
             DebugServer(mramDebugServerBlockwidth, mramDebugServerStartPort,
-            sizeof(unsigned int)), mSize(size)
+            sizeof(uint32_t)), mSize(size)
 {
-    mData = new unsigned char[size];
+    mData = new uint8_t[size];
     mConfig = {mramDebugServerBlockwidth, size};
     memset(mData, 0, size);
 }
@@ -35,8 +35,8 @@ Mram::~Mram()
 
 int Mram::handleRequest(char* answerBuf, functionRequest function, char *params)
 {
-    unsigned int address;
-    memcpy(&address, params, sizeof(unsigned int));
+    uint32_t address;
+    memcpy(&address, params, sizeof(uint32_t));
     if(mData == nullptr)
     {
         return mramDebugServerBlockwidth;
@@ -69,42 +69,56 @@ Mram::registerOnchangeFunction(std::function<void()> fun)
     notifyChange = fun;
 }
 
-unsigned char
-Mram::getByte(unsigned int address)
+uint8_t
+Mram::getByte(uint32_t address)
 {
-    readAccesses++;
-	if(address > mSize){
-		printf("MRAM read access out of bounds (%u of %u)\n", address, mSize);
-		return 0;
-	}
-	return mData[address];
+    uint8_t ret;
+    readBlock(address, &ret, 1);
+    return ret;
 }
 void
-Mram::setByte(unsigned int address, unsigned char byte)
+Mram::setByte(uint32_t address, uint8_t byte)
 {
-    writeAccesses++;
-	if(address > mSize){
-		printf("MRAM write access out of bounds (%u of %u)\n", address, mSize);
-		return;
-	}
-	mData[address] = byte;
-	if(notifyChange != nullptr)
-	{
-	    notifyChange();
-	}
+    writeBlock(address, &byte, 1);
 }
 
-unsigned long
+void
+Mram::writeBlock(uint32_t address, const void* buf, uint16_t length)
+{
+    writeAccesses++;
+    if(address+length > mSize){
+        printf("MRAM write access out of bounds (%u of %u)\n", address, mSize);
+        return;
+    }
+    memcpy(&mData[address], buf, length);
+    if(notifyChange != nullptr)
+    {
+        notifyChange();
+    }
+}
+
+void
+Mram::readBlock(uint32_t address, void* buf, uint16_t length)
+{
+    readAccesses++;
+    if(address+length > mSize){
+        printf("MRAM read access out of bounds (%u of %u)\n", address, mSize);
+        return;
+    }
+    memcpy(buf, &mData[address], length);
+}
+
+uint64_t
 Mram::getNumberOfReadAccesses()
 {
     return readAccesses;
 }
-unsigned long
+uint64_t
 Mram::getNumberOfWriteAccesses()
 {
     return writeAccesses;
 }
-unsigned long
+uint64_t
 Mram::getElapsedTimeUsec()
 {
     return (readAccesses + writeAccesses) / 1000;

@@ -28,31 +28,36 @@ struct MramConfiguration{
 };
 
 class Mram : private DebugServer{
-	unsigned int mSize;
-	unsigned char *mData;
+	uint32_t mSize;
+	uint8_t *mData;
 	MramConfiguration mConfig;
 	std::function<void()> notifyChange = nullptr;
-    unsigned long readAccesses  = 0;
-    unsigned long writeAccesses = 0;
+	uint64_t readAccesses  = 0;
+	uint64_t writeAccesses = 0;
 
 	int handleRequest(char* answerBuf, functionRequest function, char *params) override;
 public:
-	Mram(unsigned int size);
+	Mram(uint32_t size);
 	~Mram();
     void
     registerOnchangeFunction(std::function<void()> fun);
 
-	unsigned char
-	getByte(unsigned int address);
+	uint8_t
+	getByte(uint32_t address);
 	void
-	setByte(unsigned int address, unsigned char byte);
+	setByte(uint32_t address, uint8_t byte);
+
+    void
+    writeBlock(uint32_t address, const void* buf, uint16_t length);
+    void
+    readBlock(uint32_t address, void* buf, uint16_t length);
 
 
-	unsigned long
+    uint64_t
 	getNumberOfReadAccesses();
-	unsigned long
+    uint64_t
 	getNumberOfWriteAccesses();
-	unsigned long
+    uint64_t
 	getElapsedTimeUsec();
 	std::ostream&
 	serialize(std::ostream& stream);

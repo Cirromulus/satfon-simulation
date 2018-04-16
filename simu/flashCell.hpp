@@ -29,7 +29,8 @@ class f_byte{
 		latch_mask = 1 << (rand() % (sizeof(FlashByte) * 8));
 	}
 public:
-	f_byte(Failpoint f) : failpoint(f){
+	f_byte(Failpoint f) : failpoint(f)
+    {
 	}
 	int getWord(FlashByte *wrd){
 		access.times_read++;
@@ -38,6 +39,11 @@ public:
 	}
 	int setWord(FlashByte c){
 		access.times_written++;
+		if(word != 0xFF && c != 0 && c != 0xFF)
+		{
+		    printf("Overwriting existing data\n");
+		    return -1;
+		}
 		word &= c;
 		return failpoint.rad != 0 && radiation_dose > failpoint.rad ? -1 : 0;
 	}
