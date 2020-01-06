@@ -12,19 +12,20 @@ endif
 
 FVIEWERDIR=./flashView/
 MVIEWERDIR=./mramView/
+SCONS=scons-2
 
 all: mview fview example
 
 fview:
-	@scons $(MAKEJOBS) -C $(FVIEWERDIR)
+	$(SCONS) $(MAKEJOBS) -C $(FVIEWERDIR)
 
 mview:
-	@scons $(MAKEJOBS) -C $(MVIEWERDIR)
+	$(SCONS) $(MAKEJOBS) -C $(MVIEWERDIR)
 
 example:
-	@scons $(MAKEJOBS) -C test/
-	
+	$(SCONS) $(MAKEJOBS) -C test/
+
 clean:
-	@scons -C $(FVIEWERDIR) -c
-	@scons -C $(MVIEWERDIR) -c
-	@scons -C test/ -c
+	$(SCONS) -C $(FVIEWERDIR) -c
+	$(SCONS) -C $(MVIEWERDIR) -c
+	$(SCONS) -C test/ -c
